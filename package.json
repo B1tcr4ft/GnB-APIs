@@ -1,0 +1,19 @@
+{
+  "name": "gnb-backend",
+  "version": "0.0.1",
+  "description": "backend node application for bitcraft-g&b grafana plug-in",
+  "main": "app.js",
+  "scripts": {
+      "dev": "nodemon server.js",  	  
+      "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "BitCraft",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
+}
