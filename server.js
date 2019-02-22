@@ -1,9 +1,9 @@
-const express        = require('express');
-const bodyParser     = require('body-parser');
+const express = require('express');
+const bodyParser = require('body-parser');
 
-const app            = express();
+const app = express();
 
-const port = 8080;
+app.set("port", process.env.PORT || 8000);
 
 
 
@@ -15,6 +15,6 @@ const port = 8080;
 
 
 require('./app/routes')(app, {});
-app.listen(port, () => {
-    console.log('Server is listening on port ' + port);
+app.listen(app.get("port"), function(){
+    console.log("server started on port " + app.get("port"));
 });
