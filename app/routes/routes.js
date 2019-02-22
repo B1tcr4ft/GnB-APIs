@@ -1,6 +1,6 @@
 module.exports = function(app, db) {
 
-    app.get('api/', (req, res)=>{
+    app.get('/', (req, res)=>{
         res.redirect('/api/');
     });
 
