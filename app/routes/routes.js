@@ -1,16 +1,19 @@
+const fs = require('fs');
+
 module.exports = function(app, db) {
 
-    app.get('/', (req, res)=>{
+    app.get('/', (req, res) => {
         res.redirect('/api/');
     });
 
-    app.get('/api/', (req, res)=>{
+    app.get('/api/', (req, res) => {
        res.send('<h1>Benvenuti nella API di bitcraft</h1>');
     });
 
-    app.post('/api/create', (req, res) => {
-        // You'll create your note here.
-        res.send('bayesian network created')
+    app.post('/api/save', (req, res) => {
+        filePath = './public/rete.json';
+        fs.writeFileSync(filePath, JSON.stringify(req.body));
+        res.send('bayesian network has been saved');
     });
 
     app.use((req, res)=>{
