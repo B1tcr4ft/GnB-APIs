@@ -10,9 +10,22 @@ module.exports = function(app, db) {
        res.send('<h1>Benvenuti nella API di bitcraft</h1>');
     });
 
-    app.post('/api/save', (req, res) => {
+    app.get('/api/retrieve/:id', (req, res) => {
+        //prendi il file json della rete e restituiscilo
         filePath = './public/rete.json';
-        fs.writeFileSync(filePath, JSON.stringify(req.body));
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                console.error(err);
+            }
+            res.send(JSON.parse(data));
+        });
+    });
+
+    app.post('/api/save/:id', (req, res) => {
+        filePath = './public/rete.json';
+        fs.writeFile(filePath, JSON.stringify(req.body), (err => {
+            console.error(err);
+        }));
         res.send('bayesian network has been saved');
     });
 
