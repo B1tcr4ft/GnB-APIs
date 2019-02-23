@@ -1,4 +1,6 @@
 const fs = require('fs');
+//const jsonUtils = require('./gnb');
+const jsbayes = require('jsbayes');
 
 module.exports = function(app, db) {
 
@@ -11,22 +13,32 @@ module.exports = function(app, db) {
     });
 
     app.get('/api/retrieve/:id', (req, res) => {
-        //prendi il file json della rete e restituiscilo
-        filePath = './public/rete.json';
+        filePath = `./public/rete_${req.params.id}.json`;
         fs.readFile(filePath, (err, data) => {
             if (err) {
                 console.error(err);
+                res.send('<h1>file not found</h1>');
+            }else {
+                res.send(JSON.parse(data));
             }
-            res.send(JSON.parse(data));
         });
     });
 
     app.post('/api/save/:id', (req, res) => {
-        filePath = './public/rete.json';
-        fs.writeFile(filePath, JSON.stringify(req.body), (err => {
-            console.error(err);
-        }));
-        res.send('bayesian network has been saved');
+        filePath = `./public/rete_${req.params.id}.json`;
+        if (fs.existsSync(filePath)) {
+            res.send('cannot overwrite existing network with same id');
+        }else {
+            let data = JSON.stringify(req.body);
+            fs.writeFile(filePath, data, (err => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    //rete = getGraphFromJSON(data);
+                    res.send('bayesian network has been saved');
+                }
+            }));
+        }
     });
 
     app.use((req, res)=>{
