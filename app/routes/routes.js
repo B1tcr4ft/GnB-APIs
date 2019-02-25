@@ -13,7 +13,7 @@ module.exports = function(app, db) {
     });
 
     app.get('/api/retrieve/:id', (req, res) => {
-        filePath = `./public/rete_${req.params.id}.json`;
+        let filePath = `./public/rete_${req.params.id}.json`;
         fs.readFile(filePath, (err, data) => {
             if (err) {
                 console.error(err);
@@ -22,6 +22,20 @@ module.exports = function(app, db) {
                 res.send(JSON.parse(data));
             }
         });
+    });
+
+    app.post('/api/config', (req, res) => {
+        //saving configurations for network with id :id
+        let data = JSON.stringify(req.body);
+        let filePath = `./public/config.json`;
+        fs.writeFile(filePath, data, (err) => {
+            if (err){
+                res.send(err);
+            } else{
+                res.send('configuration for databases updated');
+            }
+        })
+
     });
 
     app.post('/api/save/:id', (req, res) => {
