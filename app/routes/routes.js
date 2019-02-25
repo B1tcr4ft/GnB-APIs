@@ -30,6 +30,21 @@ module.exports = function(app, db) {
         });
     });
 
+    app.post('/api/retrieve/all', (req, res) => {
+        var path = require('path');
+        var dirPath = path.join("public/", '');
+        var list=[];
+        fs.readdir(dirPath, function (err, files) {
+            if (err) {
+                return console.log('Unable to scan dir ' + err);
+            }
+            files.forEach(function (file) {
+                list.push(file);
+            });
+            res.send(list);
+        });
+    });
+
     app.post('/api/save/:id', (req, res) => {
         filePath = `./public/rete_${req.params.id}.json`;
         if (fs.existsSync(filePath)) {
