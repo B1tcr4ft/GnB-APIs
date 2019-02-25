@@ -8,6 +8,10 @@ module.exports = function(app, db) {
         res.redirect('/api/');
     });
 
+    app.get('/api/write-on-db', (req, res) => {
+
+    });
+
     app.get('/api/', (req, res) => {
        res.send('<h1>Benvenuti nella API di bitcraft</h1>');
     });
