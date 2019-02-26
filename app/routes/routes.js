@@ -61,8 +61,14 @@ module.exports = function(app, db) {
         }, 5000);
         slack.send({
             icon_url: 'https://static.thenounproject.com/png/38239-200.png',
-            text: 'API services have been restarted!',
-            username: 'BitCraft API'
+            username: 'BitCraft API',
+            attachments: [
+                {
+                    fallback: 'API services have been restarted!',
+                    color: '#77dd77',
+                    text: '*API services restarting!*'
+                }
+            ]
         });
         res.send('updated');
     });
