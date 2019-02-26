@@ -44,7 +44,7 @@ module.exports = function(app, db) {
             });
             process.exit();
         }, 5000);
-        res.send('updated');
+        res.send('test');
     });
 
     app.post('/api/retrieve/all', (req, res) => {
