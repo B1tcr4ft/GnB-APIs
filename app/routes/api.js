@@ -2,6 +2,8 @@ const { getNetworkFromJSON } = require('../util/json-util');
 const fs = require('fs');
 const request = require('request');
 
+let clockID = [];
+
 module.exports = function(app, db) {
 
     app.get('/', (req, res) => {
@@ -55,21 +57,36 @@ module.exports = function(app, db) {
     });
 
     app.get('/api/start/:id', (req, res) => {
-        let filePath = `./public/rete_${req.params.id}.json`;
-        fs.readFile(filePath, (err, data) => {
-            if (err) {
-                console.error(err);
-                res.send('<h1>file not found</h1>');
-            } else {
-                //stuff here
-                let network = getNetworkFromJSON(JSON.parse(data));
-                res.send('ok');
-            }
-        });
+        if(clockID[req.params.id]) {
+            res.send('process already started for this network');
+        } else {
+            let filePath = `./public/rete_${req.params.id}.json`;
+            fs.readFile(filePath, (err, data) => {
+                if (err) {
+                    res.send('file not found');
+                } else {
+                    let network = getNetworkFromJSON(JSON.parse(data));
+
+                    clockID[req.params.id] = setInterval(function () {
+                        //TODO fix this
+                        //network.update();
+                    }, network.refreshTime);
+
+                    res.send('ok');
+                }
+            });
+        }
     });
 
-    app.get('api/stop/:id', (req, res) => {
-        //TODO
+    app.get('/api/stop/:id', (req, res) => {
+        if(clockID[req.params.id]) {
+            clearInterval(clockID[req.params.id]);
+            clockID = clockID.filter(item => item !== req.params.id);
+
+            res.send('ok');
+        } else {
+            res.send('no processes running for this network');
+        }
     });
 
     app.post('/api/config', (req, res) => {

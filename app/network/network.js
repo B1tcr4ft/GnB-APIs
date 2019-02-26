@@ -19,31 +19,32 @@ exports.Network = class {
         this.DBWriteName = DBWriteName;
         this.refreshTime = refreshTime;
         this.nodes = nodes;
+        this.graph = this.makeGraph();
+    }
 
-        this.graph = function() {
-            let graph = jsbayes.newGraph();
+    makeGraph() {
+        let graph = jsbayes.newGraph();
 
-            //creating the nodes
-            this.nodes.forEach(node => {
-                let states = node.states.map(state => state.name);
-                graph.addNode(node.id, states);
-            });
+        //creating the nodes
+        this.nodes.forEach(node => {
+            let states = node.states.map(state => state.name);
+            graph.addNode(node.id, states);
+        });
 
-            //adding data to nodes
-            this.nodes.forEach(node => {
-                let graphNode = graph.node(node.id);
+        //adding data to nodes
+        this.nodes.forEach(node => {
+            let graphNode = graph.node(node.id);
 
-                //setting parent nodes
-                node.parents.forEach(parent => graphNode.addParent(graph.node(parent)));
+            //setting parent nodes
+            node.parents.forEach(parent => graphNode.addParent(graph.node(parent)));
 
-                //setting cpt
-                graphNode.setCpt(node.cpt);
-            });
+            //setting cpt
+            graphNode.setCpt(node.cpt);
+        });
 
-            graph.sample(20000);
+        graph.sample(20000);
 
-            return graph;
-        };
+        return graph;
     }
 
     /**
