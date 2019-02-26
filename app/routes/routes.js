@@ -1,6 +1,7 @@
 const jsnetwork = require('../util/json-util');
 const fs = require('fs');
-//const jsonUtils = require('./gnb');
+const jsbayes = require('jsbayes');
+const request = require('request');
 const { exec } = require('child_process'); //TODO remove this before release
 const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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';
 const slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
@@ -11,8 +12,10 @@ module.exports = function(app, db) {
         res.redirect('/api/');
     });
 
-    app.get('/api/write-on-db', (req, res) => {
-
+    // Here I need to make calls to influx api directly to update measurements.
+    app.post('/api/write-on-db/', (req, res) => {
+        const statusCode = writeOnDb(req.body.httpUrl, req.body.dbPort, req.body.queryParams, req.body.dataToSend);
+        res.send(statusCode);
     });
 
     app.get('/api/', (req, res) => {
@@ -134,5 +137,21 @@ module.exports = function(app, db) {
     app.use((req, res)=>{
         res.send('<h1>404 Page not Found</h1> <h2>ho capito che siam veloci ma dacci almeno il weekend</h2>');
     });
+
+    function writeOnDb(httpUrl,
+                       queryParams,
+                       data){
+        request
+            .post(`${httpUrl}${queryParams}`, {form:data})
+            .on('response', (response) => {
+                return response.statusCode;
+            });
+
+    }
+
+    function readFromDb(httpUrl,
+                        queryParams) {
+
+    }
 
 };
