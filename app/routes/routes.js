@@ -1,3 +1,5 @@
+const network = require('gnb-network');
+
 const fs = require('fs');
 //const jsonUtils = require('./gnb');
 const jsbayes = require('jsbayes');
@@ -25,20 +27,36 @@ module.exports = function(app, db) {
             if (err) {
                 console.error(err);
                 res.send('<h1>file not found</h1>');
-            }else {
+            } else {
                 res.send(JSON.parse(data));
             }
         });
     });
 
+    app.get('/api/start/:id', (req, res) => {
+        let filePath = `./public/rete_${req.params.id}.json`;
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                console.error(err);
+                res.send('<h1>file not found</h1>');
+            } else {
+                //stuff here
+                res.send('ok');
+            }
+        });
+    });
+
+    app.get('api/stop/:id', (req, res) => {
+
+    });
+
     app.post('/api/config', (req, res) => {
-        //saving configurations for network with id :id
         let data = JSON.stringify(req.body);
         let filePath = `./public/config.json`;
         fs.writeFile(filePath, data, (err) => {
-            if (err){
+            if (err) {
                 res.send(err);
-            } else{
+            } else {
                 res.send('configuration for databases updated');
             }
         })
@@ -98,15 +116,6 @@ module.exports = function(app, db) {
     });
 
     app.post('/api/save/:id', (req, res) => {
-
-
-
-        var dir = './public';
-        if (!fs.existsSync(dir)){
-            fs.mkdirSync(dir);
-        }
-
-
         filePath = `./public/rete_${req.params.id}.json`;
         if (fs.existsSync(filePath)) {
             res.send('cannot overwrite existing network with same id');
@@ -117,7 +126,6 @@ module.exports = function(app, db) {
                 if (err) {
                     res.send(err);
                 } else {
-                    //rete = getGraphFromJSON(data);
                     res.send('bayesian network has been saved');
                 }
             }));
