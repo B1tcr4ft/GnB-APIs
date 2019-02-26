@@ -31,8 +31,8 @@ module.exports = function(app, db) {
     });
 
     app.post('/api/retrieve/all', (req, res) => {
-        var path = require('path');
-        var dirPath = "public/";
+        let path = require('path');
+        let dirPath = "public/";
         let list=[];
         fs.readdir(dirPath, function (err, files) {
             if (err) {
@@ -40,7 +40,7 @@ module.exports = function(app, db) {
             }
             files.forEach(function (file) {
                 if(file !== '.gitkeep') {
-                    var contents = fs.readFileSync(dirPath+file, 'utf8');
+                    let contents = fs.readFileSync(dirPath+file, 'utf8');
                     let data=JSON.parse(contents);
                     let bayesianObject={};
                     bayesianObject.id=data.id;
@@ -85,7 +85,7 @@ module.exports = function(app, db) {
     });
 
     app.post('/api/save/:id', (req, res) => {
-        filePath = `./public/rete_${req.params.id}.json`;
+        let filePath = `./public/rete_${req.params.id}.json`;
         if (fs.existsSync(filePath)) {
             res.send('cannot overwrite existing network with same id');
         } else {
@@ -102,7 +102,18 @@ module.exports = function(app, db) {
     });
 
     app.get('/api/delete/:id', (req, res) => {
-       //TODO
+        let filePath = `./public/rete_${req.params.id}.json`;
+        if (!fs.existsSync(filePath)) {
+            res.send('network with this id does not exist');
+        } else {
+            fs.unlink(filePath, (err => {
+                if(err) {
+                    res.send(err);
+                } else {
+                    res.send('bayesian network has been deleted!');
+                }
+            }))
+        }
     });
 
     function writeOnDb(httpUrl,
