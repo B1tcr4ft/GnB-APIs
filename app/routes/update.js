@@ -6,7 +6,9 @@ module.exports = function(app, db) {
 
     app.get('/update/api', (req, res) => {
         exec('cd /home/gnb-backend && git pull');
-        console.log("This is pid " + process.pid);
+
+        console.log("Reloading API");
+
         setTimeout(function () {
             process.on("exit", function () {
                 require("child_process").spawn(process.argv.shift(), process.argv, {
@@ -23,8 +25,15 @@ module.exports = function(app, db) {
     });
 
     app.get('/update/grafana', (req, res) => {
-        //TODO implement
-        sendSlackMessage('*Grafana plugin reloading!*', 'Grafana plugin reloading!');
+        exec('cd /var/lib/grafana/plugins/gnb && git pull');
+
+        console.log("Reloading Grafana");
+
+        setTimeout(function () {
+            exec('sudo service grafana-server restart');
+        }, 5000);
+
+        sendSlackMessage('*Grafana restarting!*', 'Grafana restarting!');
         res.send('updated');
     });
 
