@@ -1,10 +1,9 @@
 const fs = require('fs');
 //const jsonUtils = require('./gnb');
 const jsbayes = require('jsbayes');
+const { exec } = require('child_process'); //TODO remove this before release
 
 module.exports = function(app, db) {
-
-
 
     app.get('/', (req, res) => {
         res.redirect('/api/');
@@ -28,6 +27,24 @@ module.exports = function(app, db) {
                 res.send(JSON.parse(data));
             }
         });
+    });
+
+    //TODO remove this before release
+    app.get('/update', (req, res) => {
+        console.log("This is pid " + process.pid);
+        setTimeout(function () {
+            process.on("exit", function () {
+                require("child_process").spawn(process.argv.shift(), process.argv, {
+                    cwd: process.cwd(),
+                    detached : true,
+                    stdio: "inherit"
+                });
+            });
+            process.exit();
+        }, 5000);
+        exec('cd /home/gnb-backend.git && git fetch');
+        exec('cd /home/gnb-backend.git && GIT_WORK_TREE=/home/gnb-backend git checkout -f master');
+        res.send('updated');
     });
 
     app.post('/api/retrieve/all', (req, res) => {
@@ -64,6 +81,6 @@ module.exports = function(app, db) {
 
     app.use((req, res)=>{
         res.send('<h1>404 Page not Found</h1> <h2>ho capito che siam veloci ma dacci almeno il weekend</h2>');
-    })
+    });
 
 };
