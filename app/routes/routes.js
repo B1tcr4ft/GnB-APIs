@@ -98,6 +98,15 @@ module.exports = function(app, db) {
     });
 
     app.post('/api/save/:id', (req, res) => {
+
+
+
+        var dir = './public';
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir);
+        }
+
+
         filePath = `./public/rete_${req.params.id}.json`;
         if (fs.existsSync(filePath)) {
             res.send('cannot overwrite existing network with same id');
