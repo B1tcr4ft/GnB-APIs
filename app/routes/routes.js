@@ -1,6 +1,7 @@
 const fs = require('fs');
-//const jsonUtils = require('./gnb');
 const jsbayes = require('jsbayes');
+const request = require('request');
+
 const { exec } = require('child_process'); //TODO remove this before release
 
 module.exports = function(app, db) {
@@ -9,8 +10,21 @@ module.exports = function(app, db) {
         res.redirect('/api/');
     });
 
+    // Here I need to make calls to influx api directly to update measurements.
     app.get('/api/write-on-db', (req, res) => {
+        /* Insert requests
+        POST http://68.183.74.78:8086/write?db=mydb&precision=s
+        Content-Type: application/x-www-form-urlencoded
 
+        mymeas,mytag=3 myfield=12
+        */
+        request
+            .post('http://68.183.74.78:8086/write?db=mydb&precision=s', {form:'mymeas,mytag=666 myfield=342'})
+            .on('response', (response) => {
+                console.log(response.body);
+            });
+        res.send("ok");
+        // Query requests
     });
 
     app.get('/api/', (req, res) => {
