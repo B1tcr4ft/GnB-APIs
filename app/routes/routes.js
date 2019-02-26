@@ -64,7 +64,7 @@ module.exports = function(app, db) {
             username: 'BitCraft API',
             attachments: [
                 {
-                    fallback: 'API services have been restarted!',
+                    fallback: 'API services restarting!',
                     color: '#77dd77',
                     text: '*API services restarting!*'
                 }
