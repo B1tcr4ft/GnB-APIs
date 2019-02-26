@@ -57,11 +57,9 @@ module.exports = function(app, db) {
                     stdio: "inherit"
                 });
                 slack.send({
-                    channel: '#commits',
                     icon_url: 'https://static.thenounproject.com/png/38239-200.png',
                     text: 'API services have been restarted!',
-                    unfurl_links: 1,
-                    username: 'BitCraft API'
+                    username: 'BitCraft-API'
                 });
             });
             process.exit();
