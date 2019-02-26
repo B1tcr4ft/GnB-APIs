@@ -56,14 +56,14 @@ module.exports = function(app, db) {
                     detached : true,
                     stdio: "inherit"
                 });
-                slack.send({
-                    icon_url: 'https://static.thenounproject.com/png/38239-200.png',
-                    text: 'API services have been restarted!',
-                    username: 'BitCraft-API'
-                });
             });
             process.exit();
         }, 5000);
+        slack.send({
+            icon_url: 'https://static.thenounproject.com/png/38239-200.png',
+            text: 'API services have been restarted!',
+            username: 'BitCraft API'
+        });
         res.send('updated');
     });
 
