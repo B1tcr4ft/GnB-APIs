@@ -13,20 +13,9 @@ module.exports = function(app, db) {
     });
 
     // Here I need to make calls to influx api directly to update measurements.
-    app.get('/api/write-on-db', (req, res) => {
-        /* Insert requests
-        POST http://68.183.74.78:8086/write?db=mydb&precision=s
-        Content-Type: application/x-www-form-urlencoded
-
-        mymeas,mytag=3 myfield=12
-        */
-        request
-            .post('http://68.183.74.78:8086/write?db=mydb&precision=s', {form:'mymeas,mytag=666 myfield=342'})
-            .on('response', (response) => {
-                console.log(response.body);
-            });
-        res.send("ok");
-        // Query requests
+    app.post('/api/write-on-db/', (req, res) => {
+        const statusCode = writeOnDb(req.body.httpUrl, req.body.dbPort, req.body.queryParams, req.body.dataToSend);
+        res.send(statusCode);
     });
 
     app.get('/api/', (req, res) => {
@@ -132,5 +121,21 @@ module.exports = function(app, db) {
     app.use((req, res)=>{
         res.send('<h1>404 Page not Found</h1> <h2>ho capito che siam veloci ma dacci almeno il weekend</h2>');
     });
+
+    function writeOnDb(httpUrl,
+                       queryParams,
+                       data){
+        request
+            .post(`${httpUrl}${queryParams}`, {form:data})
+            .on('response', (response) => {
+                return response.statusCode;
+            });
+
+    }
+
+    function readFromDb(httpUrl,
+                        queryParams) {
+
+    }
 
 };
