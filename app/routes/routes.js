@@ -70,32 +70,45 @@ module.exports = function(app, db) {
                     detached : true,
                     stdio: "inherit"
                 });
-                slack.send({
-                    channel: '#commits',
-                    icon_url: 'https://static.thenounproject.com/png/38239-200.png',
-                    text: 'API services have been restarted!',
-                    unfurl_links: 1,
-                    username: 'BitCraft API'
-                });
             });
             process.exit();
         }, 5000);
+        slack.send({
+            icon_url: 'https://static.thenounproject.com/png/38239-200.png',
+            username: 'BitCraft API',
+            attachments: [
+                {
+                    fallback: 'API services restarting!',
+                    color: '#77dd77',
+                    text: '*API services restarting!*'
+                }
+            ]
+        });
         res.send('updated');
     });
 
     app.post('/api/retrieve/all', (req, res) => {
         var path = require('path');
-        var dirPath = path.join("public/", '');
-        var list=[];
+        var dirPath = "public/";
+        let list=[];
         fs.readdir(dirPath, function (err, files) {
             if (err) {
                 return console.log('Unable to scan dir ' + err);
             }
             files.forEach(function (file) {
-                list.push(file);
+                    var contents = fs.readFileSync(dirPath+file, 'utf8');
+                    let data=JSON.parse(contents);
+                    let bayesianObject={};
+                    bayesianObject.id=data.id;
+                    bayesianObject.name=data.name;
+                    list.push(bayesianObject);
+                    console.log(list);
+
             });
+            console.log(list);
             res.send(list);
         });
+
     });
 
     app.post('/api/save/:id', (req, res) => {
@@ -103,6 +116,7 @@ module.exports = function(app, db) {
         if (fs.existsSync(filePath)) {
             res.send('cannot overwrite existing network with same id');
         }else {
+            req.body.id=req.params.id;
             let data = JSON.stringify(req.body);
             fs.writeFile(filePath, data, (err => {
                 if (err) {
