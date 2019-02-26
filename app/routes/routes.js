@@ -1,9 +1,6 @@
 const { getNetworkFromJSON } = require('../util/json-util');
 const fs = require('fs');
 const request = require('request');
-const { exec } = require('child_process'); //TODO remove this before release
-const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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';
-const slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
 
 module.exports = function(app, db) {
 
@@ -62,34 +59,6 @@ module.exports = function(app, db) {
             }
         })
 
-    });
-
-    //TODO remove this before release
-    app.get('/update', (req, res) => {
-        exec('cd /home/gnb-backend && git pull');
-        console.log("This is pid " + process.pid);
-        setTimeout(function () {
-            process.on("exit", function () {
-                require("child_process").spawn(process.argv.shift(), process.argv, {
-                    cwd: process.cwd(),
-                    detached : true,
-                    stdio: "inherit"
-                });
-            });
-            process.exit();
-        }, 5000);
-        slack.send({
-            icon_url: 'https://static.thenounproject.com/png/38239-200.png',
-            username: 'BitCraft API',
-            attachments: [
-                {
-                    fallback: 'API services restarting!',
-                    color: '#77dd77',
-                    text: '*API services restarting!*'
-                }
-            ]
-        });
-        res.send('updated');
     });
 
     app.post('/api/retrieve/all', (req, res) => {
