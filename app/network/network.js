@@ -1,8 +1,8 @@
-import { Node } from "./node";
-import { getNetworkFromJSON, getJSONFromNetwork } from "./util/json-util";
-import * as jsbayes from 'jsbayes';
+require('./node');
+require('../util/json-util');
+const jsbayes = require('jsbayes');
 
-export class Network {
+class Network {
     /**
      * Build a network instance
      * @param id {string} the network id

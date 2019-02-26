@@ -1,4 +1,4 @@
-//const network = require('gnb-network');
+require('../network/network');
 
 const fs = require('fs');
 //const jsonUtils = require('./gnb');
@@ -119,7 +119,7 @@ module.exports = function(app, db) {
         filePath = `./public/rete_${req.params.id}.json`;
         if (fs.existsSync(filePath)) {
             res.send('cannot overwrite existing network with same id');
-        }else {
+        } else {
             req.body.id=req.params.id;
             let data = JSON.stringify(req.body);
             fs.writeFile(filePath, data, (err => {

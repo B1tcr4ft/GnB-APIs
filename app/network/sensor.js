@@ -1,4 +1,4 @@
-export class Sensor {
+class Sensor {
     /**
      * Build a sensor instance
      * @param DBSensorName {string} the database name

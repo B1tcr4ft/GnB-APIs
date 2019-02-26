@@ -1,4 +1,4 @@
-export class State {
+class State {
     constructor(name, trigger) {
         this.name = name;
         this.trigger = trigger;
