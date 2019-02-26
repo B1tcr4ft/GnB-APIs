@@ -1,5 +1,8 @@
-require('../network/network');
+const Network = require("../network/network").Network;
+const Node = require('../network/node').Node;
 const jsbayes = require('jsbayes');
+
+var exports = module.exports = {};
 
 /**
  * @deprecated
@@ -8,7 +11,7 @@ const jsbayes = require('jsbayes');
  * @param json {JSON} the json file
  * @returns {jsbayes} the jsbayes graph
  */
-function getGraphFromJSON(json) {
+exports.getGraphFromJSON = function(json) {
     let graph = jsbayes.newGraph();
 
     //creating the nodes
@@ -38,7 +41,7 @@ function getGraphFromJSON(json) {
     graph.sample(20000);
 
     return graph;
-}
+};
 
 /**
  * TODO
@@ -46,9 +49,9 @@ function getGraphFromJSON(json) {
  * @param network {Network} the network instance
  * @returns {JSON} the JSON definition
  */
-function getJSONFromNetwork(network) {
+exports.getJSONFromNetwork = function(network) {
     return null;
-}
+};
 
 /**
  * Get a network instance from a JSON containing
@@ -56,7 +59,7 @@ function getJSONFromNetwork(network) {
  * @param json {JSON} the json file
  * @returns {Network} the network instance
  */
-function getNetworkFromJSON(json) {
+exports.getNetworkFromJSON = function(json) {
     let id = json.id;
     let name = json.name;
     let DBWriteName = json.databaseWriteName;
@@ -64,4 +67,4 @@ function getNetworkFromJSON(json) {
     let nodes = json.nodes.map(node => Node.fromJSON(node));
 
     return new Network(id, name, DBWriteName, refreshTime, nodes);
-}
+};

@@ -1,8 +1,11 @@
-require('./node');
-require('../util/json-util');
+const getJSONFromNetwork = require("../util/json-util").getJSONFromNetwork;
+const getNetworkFromJSON = require("../util/json-util").getNetworkFromJSON;
+const Node = require('./node').Node;
 const jsbayes = require('jsbayes');
 
-class Network {
+var exports = module.exports = {};
+
+exports.Network = class {
     /**
      * Build a network instance
      * @param id {string} the network id
@@ -18,40 +21,30 @@ class Network {
         this.refreshTime = refreshTime;
         this.nodes = nodes;
 
-        this.makeGraph();
-    }
+        this.graph = function() {
+            let graph = jsbayes.newGraph();
 
-    /**
-     * TODO
-     * I'd like to make this function private but idk how to make it
-     */
-    makeGraph() {
-        if(this.graph != null) {
-            return;
-        }
+            //creating the nodes
+            this.nodes.forEach(node => {
+                let states = node.states.map(state => state.name);
+                graph.addNode(node.id, states);
+            });
 
-        let graph = jsbayes.newGraph();
+            //adding data to nodes
+            this.nodes.forEach(node => {
+                let graphNode = graph.node(node.id);
 
-        //creating the nodes
-        this.nodes.forEach(node => {
-            let states = node.states.map(state => state.name);
-            graph.addNode(node.ID, states);
-        });
+                //setting parent nodes
+                node.parents.forEach(parent => graphNode.addParent(graph.node(parent)));
 
-        //adding data to nodes
-        this.nodes.forEach(node => {
-            let graphNode = graph.node(node.ID);
+                //setting cpt
+                graphNode.setCpt(node.cpt);
+            });
 
-            //setting parent nodes
-            node.parents.forEach(parent => graphNode.addParent(graph.node(parent)));
+            graph.sample(20000);
 
-            //setting cpt
-            graphNode.setCpt(node.cpt);
-        });
-
-        graph.sample(20000);
-
-        this.graph = graph;
+            return graph;
+        };
     }
 
     /**
@@ -80,4 +73,4 @@ class Network {
     static fromJSON(json) {
         return getNetworkFromJSON(json);
     }
-}
+};
