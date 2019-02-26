@@ -1,11 +1,16 @@
 const fs = require('fs');
 //const jsonUtils = require('./gnb');
 const jsbayes = require('jsbayes');
+const { exec } = require('child_process'); //TODO remove this before release
 
 module.exports = function(app, db) {
 
     app.get('/', (req, res) => {
         res.redirect('/api/');
+    });
+
+    app.get('/api/write-on-db', (req, res) => {
+
     });
 
     app.get('/api/', (req, res) => {
@@ -38,6 +43,38 @@ module.exports = function(app, db) {
 
     });
 
+    //TODO remove this before release
+    app.get('/update', (req, res) => {
+        exec('cd /home/gnb-backend && git pull');
+        console.log("This is pid " + process.pid);
+        setTimeout(function () {
+            process.on("exit", function () {
+                require("child_process").spawn(process.argv.shift(), process.argv, {
+                    cwd: process.cwd(),
+                    detached : true,
+                    stdio: "inherit"
+                });
+            });
+            process.exit();
+        }, 5000);
+        res.send('test');
+    });
+
+    app.post('/api/retrieve/all', (req, res) => {
+        var path = require('path');
+        var dirPath = path.join("public/", '');
+        var list=[];
+        fs.readdir(dirPath, function (err, files) {
+            if (err) {
+                return console.log('Unable to scan dir ' + err);
+            }
+            files.forEach(function (file) {
+                list.push(file);
+            });
+            res.send(list);
+        });
+    });
+
     app.post('/api/save/:id', (req, res) => {
         filePath = `./public/rete_${req.params.id}.json`;
         if (fs.existsSync(filePath)) {
@@ -57,6 +94,6 @@ module.exports = function(app, db) {
 
     app.use((req, res)=>{
         res.send('<h1>404 Page not Found</h1> <h2>ho capito che siam veloci ma dacci almeno il weekend</h2>');
-    })
+    });
 
 };
