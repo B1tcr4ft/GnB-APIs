@@ -8,14 +8,14 @@ module.exports = function(app, db) {
         res.redirect('/api/');
     });
 
+    app.get('/api/', (req, res) => {
+       res.send('<h1>Benvenuti nella API di bitcraft</h1>');
+    });
+
     // Here I need to make calls to influx api directly to update measurements.
     app.post('/api/write-on-db/', (req, res) => {
         const statusCode = writeOnDb(req.body.httpUrl, req.body.dbPort, req.body.queryParams, req.body.dataToSend);
         res.send(statusCode);
-    });
-
-    app.get('/api/', (req, res) => {
-       res.send('<h1>Benvenuti nella API di bitcraft</h1>');
     });
 
     app.get('/api/retrieve/:id', (req, res) => {
@@ -28,37 +28,6 @@ module.exports = function(app, db) {
                 res.send(JSON.parse(data));
             }
         });
-    });
-
-    app.get('/api/start/:id', (req, res) => {
-        let filePath = `./public/rete_${req.params.id}.json`;
-        fs.readFile(filePath, (err, data) => {
-            if (err) {
-                console.error(err);
-                res.send('<h1>file not found</h1>');
-            } else {
-                //stuff here
-                let network = getNetworkFromJSON(JSON.parse(data));
-                res.send('ok');
-            }
-        });
-    });
-
-    app.get('api/stop/:id', (req, res) => {
-
-    });
-
-    app.post('/api/config', (req, res) => {
-        let data = JSON.stringify(req.body);
-        let filePath = `./public/config.json`;
-        fs.writeFile(filePath, data, (err) => {
-            if (err) {
-                res.send(err);
-            } else {
-                res.send('configuration for databases updated');
-            }
-        })
-
     });
 
     app.post('/api/retrieve/all', (req, res) => {
@@ -85,6 +54,36 @@ module.exports = function(app, db) {
         });
     });
 
+    app.get('/api/start/:id', (req, res) => {
+        let filePath = `./public/rete_${req.params.id}.json`;
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                console.error(err);
+                res.send('<h1>file not found</h1>');
+            } else {
+                //stuff here
+                let network = getNetworkFromJSON(JSON.parse(data));
+                res.send('ok');
+            }
+        });
+    });
+
+    app.get('api/stop/:id', (req, res) => {
+        //TODO
+    });
+
+    app.post('/api/config', (req, res) => {
+        let data = JSON.stringify(req.body);
+        let filePath = `./public/config.json`;
+        fs.writeFile(filePath, data, (err) => {
+            if (err) {
+                res.send(err);
+            } else {
+                res.send('configuration for databases updated');
+            }
+        })
+    });
+
     app.post('/api/save/:id', (req, res) => {
         filePath = `./public/rete_${req.params.id}.json`;
         if (fs.existsSync(filePath)) {
@@ -100,6 +99,10 @@ module.exports = function(app, db) {
                 }
             }));
         }
+    });
+
+    app.get('/api/delete/:id', (req, res) => {
+       //TODO
     });
 
     function writeOnDb(httpUrl,
