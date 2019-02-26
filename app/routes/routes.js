@@ -3,6 +3,8 @@ const jsbayes = require('jsbayes');
 const request = require('request');
 
 const { exec } = require('child_process'); //TODO remove this before release
+const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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';
+const slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
 
 module.exports = function(app, db) {
 
@@ -68,10 +70,17 @@ module.exports = function(app, db) {
                     detached : true,
                     stdio: "inherit"
                 });
+                slack.send({
+                    channel: '#commits',
+                    icon_url: 'https://static.thenounproject.com/png/38239-200.png',
+                    text: 'API services have been restarted!',
+                    unfurl_links: 1,
+                    username: 'BitCraft API'
+                });
             });
             process.exit();
         }, 5000);
-        res.send('test');
+        res.send('updated');
     });
 
     app.post('/api/retrieve/all', (req, res) => {

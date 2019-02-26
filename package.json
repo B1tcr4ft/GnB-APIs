@@ -14,7 +14,8 @@
     "express": "^4.16.4",
     "gnb-network": "gitlab:bitcrafters/gnb-network",
     "path": "^0.12.7",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "slack-notify": "^0.1.7"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"
