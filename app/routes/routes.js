@@ -1,3 +1,4 @@
+const jsnetwork = require('../util/json-util');
 const fs = require('fs');
 const jsbayes = require('jsbayes');
 const request = require('request');
@@ -28,20 +29,37 @@ module.exports = function(app, db) {
             if (err) {
                 console.error(err);
                 res.send('<h1>file not found</h1>');
-            }else {
+            } else {
                 res.send(JSON.parse(data));
             }
         });
     });
 
+    app.get('/api/start/:id', (req, res) => {
+        let filePath = `./public/rete_${req.params.id}.json`;
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                console.error(err);
+                res.send('<h1>file not found</h1>');
+            } else {
+                //stuff here
+                //let network = jsnetwork.fromJSON(JSON.parse(data));
+                res.send('ok');
+            }
+        });
+    });
+
+    app.get('api/stop/:id', (req, res) => {
+
+    });
+
     app.post('/api/config', (req, res) => {
-        //saving configurations for network with id :id
         let data = JSON.stringify(req.body);
         let filePath = `./public/config.json`;
         fs.writeFile(filePath, data, (err) => {
-            if (err){
+            if (err) {
                 res.send(err);
-            } else{
+            } else {
                 res.send('configuration for databases updated');
             }
         })
@@ -85,6 +103,7 @@ module.exports = function(app, db) {
                 return console.log('Unable to scan dir ' + err);
             }
             files.forEach(function (file) {
+                if(file !== '.gitkeep') {
                     var contents = fs.readFileSync(dirPath+file, 'utf8');
                     let data=JSON.parse(contents);
                     let bayesianObject={};
@@ -92,26 +111,24 @@ module.exports = function(app, db) {
                     bayesianObject.name=data.name;
                     list.push(bayesianObject);
                     console.log(list);
-
+                }
             });
             console.log(list);
             res.send(list);
         });
-
     });
 
     app.post('/api/save/:id', (req, res) => {
         filePath = `./public/rete_${req.params.id}.json`;
         if (fs.existsSync(filePath)) {
             res.send('cannot overwrite existing network with same id');
-        }else {
+        } else {
             req.body.id=req.params.id;
             let data = JSON.stringify(req.body);
             fs.writeFile(filePath, data, (err => {
                 if (err) {
                     res.send(err);
                 } else {
-                    //rete = getGraphFromJSON(data);
                     res.send('bayesian network has been saved');
                 }
             }));

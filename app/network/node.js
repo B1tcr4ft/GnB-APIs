@@ -1,7 +1,7 @@
-import { State } from "./state";
-import { Sensor } from "./sensor";
+require('./state');
+require('./sensor');
 
-export class Node {
+class Node {
     /**
      * Build a node instance
      * @param ID {string} the node ID

@@ -1,5 +1,5 @@
-import { Network } from '../network';
-import * as jsbayes from 'jsbayes'
+require('../network/network');
+const jsbayes = require('jsbayes');
 
 /**
  * @deprecated
@@ -46,7 +46,7 @@ function getGraphFromJSON(json) {
  * @param network {Network} the network instance
  * @returns {JSON} the JSON definition
  */
-export function getJSONFromNetwork(network) {
+function getJSONFromNetwork(network) {
     return null;
 }
 
@@ -56,7 +56,7 @@ export function getJSONFromNetwork(network) {
  * @param json {JSON} the json file
  * @returns {Network} the network instance
  */
-export function getNetworkFromJSON(json) {
+function getNetworkFromJSON(json) {
     let id = json.id;
     let name = json.name;
     let DBWriteName = json.databaseWriteName;
