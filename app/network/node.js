@@ -1,5 +1,5 @@
-const State = require('./state').State;
-const Sensor = require('./sensor').Sensor;
+const { State } = require('./state');
+const { Sensor } = require('./sensor');
 
 var exports = module.exports = {};
 

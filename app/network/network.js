@@ -1,6 +1,5 @@
-const getJSONFromNetwork = require("../util/json-util").getJSONFromNetwork;
-const getNetworkFromJSON = require("../util/json-util").getNetworkFromJSON;
-const Node = require('./node').Node;
+const { getJSONFromNetwork, getNetworkFromJSON } = require("../util/json-util");
+const { Node } = require('./node');
 const jsbayes = require('jsbayes');
 
 var exports = module.exports = {};

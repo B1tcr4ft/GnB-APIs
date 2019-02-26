@@ -1,6 +1,5 @@
-const jsnetwork = require('../util/json-util');
+const { getNetworkFromJSON } = require('../util/json-util');
 const fs = require('fs');
-const jsbayes = require('jsbayes');
 const request = require('request');
 const { exec } = require('child_process'); //TODO remove this before release
 const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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';
@@ -42,7 +41,7 @@ module.exports = function(app, db) {
                 res.send('<h1>file not found</h1>');
             } else {
                 //stuff here
-                let network = jsnetwork.getNetworkFromJSON(JSON.parse(data));
+                let network = getNetworkFromJSON(JSON.parse(data));
                 res.send('ok');
             }
         });
