@@ -1,5 +1,4 @@
-require('../network/network');
-
+const jsnetwork = require('../util/json-util');
 const fs = require('fs');
 //const jsonUtils = require('./gnb');
 const jsbayes = require('jsbayes');
@@ -41,6 +40,7 @@ module.exports = function(app, db) {
                 res.send('<h1>file not found</h1>');
             } else {
                 //stuff here
+                //let network = jsnetwork.fromJSON(JSON.parse(data));
                 res.send('ok');
             }
         });
@@ -100,6 +100,7 @@ module.exports = function(app, db) {
                 return console.log('Unable to scan dir ' + err);
             }
             files.forEach(function (file) {
+                if(file !== '.gitkeep') {
                     var contents = fs.readFileSync(dirPath+file, 'utf8');
                     let data=JSON.parse(contents);
                     let bayesianObject={};
@@ -107,12 +108,11 @@ module.exports = function(app, db) {
                     bayesianObject.name=data.name;
                     list.push(bayesianObject);
                     console.log(list);
-
+                }
             });
             console.log(list);
             res.send(list);
         });
-
     });
 
     app.post('/api/save/:id', (req, res) => {
