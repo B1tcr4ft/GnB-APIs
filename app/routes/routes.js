@@ -1,10 +1,11 @@
 const fs = require('fs');
 //const jsonUtils = require('./gnb');
 const jsbayes = require('jsbayes');
+const { exec } = require('child_process'); //TODO remove this before release
+const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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';
+const slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
 
 module.exports = function(app, db) {
-
-
 
     app.get('/', (req, res) => {
         res.redirect('/api/');
@@ -19,7 +20,7 @@ module.exports = function(app, db) {
     });
 
     app.get('/api/retrieve/:id', (req, res) => {
-        filePath = `./public/rete_${req.params.id}.json`;
+        let filePath = `./public/rete_${req.params.id}.json`;
         fs.readFile(filePath, (err, data) => {
             if (err) {
                 console.error(err);
@@ -28,6 +29,48 @@ module.exports = function(app, db) {
                 res.send(JSON.parse(data));
             }
         });
+    });
+
+    app.post('/api/config', (req, res) => {
+        //saving configurations for network with id :id
+        let data = JSON.stringify(req.body);
+        let filePath = `./public/config.json`;
+        fs.writeFile(filePath, data, (err) => {
+            if (err){
+                res.send(err);
+            } else{
+                res.send('configuration for databases updated');
+            }
+        })
+
+    });
+
+    //TODO remove this before release
+    app.get('/update', (req, res) => {
+        exec('cd /home/gnb-backend && git pull');
+        console.log("This is pid " + process.pid);
+        setTimeout(function () {
+            process.on("exit", function () {
+                require("child_process").spawn(process.argv.shift(), process.argv, {
+                    cwd: process.cwd(),
+                    detached : true,
+                    stdio: "inherit"
+                });
+            });
+            process.exit();
+        }, 5000);
+        slack.send({
+            icon_url: 'https://static.thenounproject.com/png/38239-200.png',
+            username: 'BitCraft API',
+            attachments: [
+                {
+                    fallback: 'API services have been restarted!',
+                    color: '#77dd77',
+                    text: '*API services restarting!*'
+                }
+            ]
+        });
+        res.send('updated');
     });
 
     app.post('/api/retrieve/all', (req, res) => {
@@ -74,6 +117,6 @@ module.exports = function(app, db) {
 
     app.use((req, res)=>{
         res.send('<h1>404 Page not Found</h1> <h2>ho capito che siam veloci ma dacci almeno il weekend</h2>');
-    })
+    });
 
 };

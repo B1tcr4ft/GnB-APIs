@@ -8,12 +8,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "BitCraft",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
+    "gnb-network": "gitlab:bitcrafters/gnb-network",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "jsbayes": "^0.1.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "slack-notify": "^0.1.7"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"
