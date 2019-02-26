@@ -57,10 +57,11 @@ export function getJSONFromNetwork(network) {
  * @returns {Network} the network instance
  */
 export function getNetworkFromJSON(json) {
+    let id = json.id;
     let name = json.name;
     let DBWriteName = json.databaseWriteName;
     let refreshTime = json.refreshTime;
     let nodes = json.nodes.map(node => Node.fromJSON(node));
 
-    return new Network(name, DBWriteName, refreshTime, nodes);
+    return new Network(id, name, DBWriteName, refreshTime, nodes);
 }
