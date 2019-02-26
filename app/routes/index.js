@@ -1,8 +1,8 @@
-const routes = require('./routes');
+const api = require('./api');
 const update = require('./update'); // TODO remove this before release
 
 module.exports = function(app, db) {
-    routes(app, db);
+    api(app, db);
     update(app, db);
 
     app.use((req, res)=>{
