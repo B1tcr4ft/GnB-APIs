@@ -31,6 +31,8 @@ module.exports = function(app, db) {
 
     //TODO remove this before release
     app.get('/update', (req, res) => {
+        exec('cd /home/gnb-backend.git && git fetch');
+        exec('cd /home/gnb-backend.git && GIT_WORK_TREE=/home/gnb-backend git checkout -f master');
         console.log("This is pid " + process.pid);
         setTimeout(function () {
             process.on("exit", function () {
@@ -42,8 +44,6 @@ module.exports = function(app, db) {
             });
             process.exit();
         }, 5000);
-        exec('cd /home/gnb-backend.git && git fetch');
-        exec('cd /home/gnb-backend.git && GIT_WORK_TREE=/home/gnb-backend git checkout -f master');
         res.send('updated');
     });
 
