@@ -1,6 +1,6 @@
 const request = require('request');
 
-let exports = module.exports = {};
+var exports = module.exports = {};
 
 /**
  * Insert data in a specific database

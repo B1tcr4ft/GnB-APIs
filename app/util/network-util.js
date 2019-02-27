@@ -1,6 +1,6 @@
 const { writeNetworkStates, readFromDb } = require('./db-util');
 
-let exports = module.exports = {};
+var exports = module.exports = {};
 
 /**
  * Calculates and updates current node values and state
