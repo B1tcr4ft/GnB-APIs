@@ -3,9 +3,10 @@ const fs = require('fs');
 const jsbayes = require('jsbayes');
 const request = require('request');
 
-const { exec } = require('child_process'); //TODO remove this before release
 const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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';
 const slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
+const { exec } = require('child_process'); //TODO remove this before release
+
 
 module.exports = function(app, db) {
 
@@ -13,14 +14,8 @@ module.exports = function(app, db) {
         res.redirect('/api/');
     });
 
-    // Here I need to make calls to influx api directly to update measurements.
-    app.post('/api/write-on-db/', (req, res) => {
-        const statusCode = writeOnDb(req.body.httpUrl, req.body.dbPort, req.body.queryParams, req.body.dataToSend);
-        res.send(statusCode);
-    });
-
     app.get('/api/', (req, res) => {
-       res.send('<h1>Benvenuti nella API di bitcraft</h1>');
+        res.send('<h1>Benvenuti nella API di bitcraft</h1>');
     });
 
     app.get('/api/retrieve/:id', (req, res) => {
@@ -42,8 +37,6 @@ module.exports = function(app, db) {
                 console.error(err);
                 res.send('<h1>file not found</h1>');
             } else {
-                //stuff here
-                //let network = jsnetwork.fromJSON(JSON.parse(data));
                 res.send('ok');
             }
         });
@@ -51,6 +44,19 @@ module.exports = function(app, db) {
 
     app.get('api/stop/:id', (req, res) => {
 
+    });
+
+
+
+    // Here I need to make calls to influx api directly to update measurements.
+    app.post('/api/write-on-db/', (req, res) => {
+        const statusCode = writeOnDb(req.body.httpUrl, req.body.queryParams, req.body.dataToSend);
+        res.send(statusCode);
+    });
+
+    app.post('/api/read-from-db', (req, res) => {
+        const statusCode = readFromDb(req.body.httpUrl, req.body.queryParams);
+        res.send(statusCode);
     });
 
     app.post('/api/config', (req, res) => {
@@ -139,20 +145,31 @@ module.exports = function(app, db) {
         res.send('<h1>404 Page not Found</h1> <h2>ho capito che siam veloci ma dacci almeno il weekend</h2>');
     });
 
+    /**
+     * Write data to existing database
+     */
     function writeOnDb(httpUrl,
                        queryParams,
                        data){
         request
             .post(`${httpUrl}${queryParams}`, {form:data})
-            .on('response', (response) => {
-                return response.statusCode;
+            .on('response', (res) => {
+                return res.statusCode;
             });
 
     }
-
+    /**
+     * Query data from specific database*/
     function readFromDb(httpUrl,
                         queryParams) {
-
+        request
+            .get(`${httpUrl}${queryParams}`)
+            .on('error', function(err) {
+                console.log(err)
+            })
+            .on('data', function(data) {
+                // decompressed data as it is received
+                console.log(JSON.parse(data).results[0].series[0].values);
+            });
     }
-
 };
