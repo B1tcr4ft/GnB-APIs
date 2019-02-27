@@ -1,7 +1,7 @@
 const { Network } = require('gnb-network/node');
 const { updateNetwork } = require('../util/network-util');
+const { readFromDb, writeOnDb } = require('../util/db-util');
 const fs = require('fs');
-const request = require('request');
 
 let clockID = [];
 
@@ -141,29 +141,4 @@ module.exports = function(app, db) {
     app.use((req, res)=>{
         res.send('<h1>404 Page not Found</h1> <h2>ho capito che siam veloci ma dacci almeno il weekend</h2>');
     });
-
-    function writeOnDb(httpUrl,
-                       queryParams,
-                       data){
-        request
-            .post(`${httpUrl}${queryParams}`, {form:data})
-            .on('response', (res) => {
-                return res.statusCode;
-            });
-
-    }
-    /**
-     * Query data from specific database*/
-    function readFromDb(httpUrl,
-                        queryParams) {
-        request
-            .get(`${httpUrl}${queryParams}`)
-            .on('error', function(err) {
-                console.log(err)
-            })
-            .on('data', function(data) {
-                // decompressed data as it is received
-                console.log(JSON.parse(data).results[0].series[0].values);
-            });
-    }
 };
