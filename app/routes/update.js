@@ -4,7 +4,7 @@ const slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
 
 module.exports = function(app, db) {
 
-    app.post('/update/api', (req, res) => {
+    app.get('/update/api', (req, res) => {
         exec('cd /home/gnb-backend && git pull');
 
         console.log("Reloading API");
@@ -24,7 +24,7 @@ module.exports = function(app, db) {
         res.send('updated');
     });
 
-    app.post('/update/grafana', (req, res) => {
+    app.get('/update/grafana', (req, res) => {
         exec('cd /var/lib/grafana/plugins/gnb && git pull');
 
         console.log("Reloading Grafana");
