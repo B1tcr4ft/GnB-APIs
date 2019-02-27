@@ -138,7 +138,4 @@ module.exports = function(app, db) {
         }
     });
 
-    app.use((req, res)=>{
-        res.send('<h1>404 Page not Found</h1> <h2>ho capito che siam veloci ma dacci almeno il weekend</h2>');
-    });
 };
