@@ -18,6 +18,7 @@
     "slack-notify": "^0.1.7"
   },
   "devDependencies": {
-    "nodemon": "^1.18.10"
+    "nodemon": "^1.18.10",
+    "jsbayes": "^0.1.0"
   }
 }
