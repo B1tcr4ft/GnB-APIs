@@ -20,31 +20,46 @@ module.exports = function(app) {
             process.exit();
         }, 5000);
 
-        sendSlackMessage('*API services restarting!*', 'API services restarting!');
+        sendSlackMessage('*API services restarting!*', 'API services restarting!', '#77dd77');
         res.send('updated');
     });
 
     app.post('/update/grafana', (req, res) => {
-        exec('cd /var/lib/grafana/plugins/gnb && git pull');
+        exec('cd /var/lib/grafana/plugins/gnb && git pull', (error) => {
+            if(error) {
+                sendSlackMessage('*Grafana error:* ' + error, 'Grafana error: ' + error, '#ff6961');
+                res.send(error);
+            } else {
+                exec('cd /var/lib/grafana/plugins/gnb && npm install', (error) => {
+                    if(error) {
+                        sendSlackMessage('*Grafana error:* ' + error, 'Grafana error: ' + error, '#ff6961');
+                        res.send(error);
+                    } else {
+                        sendSlackMessage('*Grafana restarting...*', 'Grafana restarting...', '#ffb347');
 
-        console.log("Reloading Grafana");
-
-        setTimeout(function () {
-            exec('sudo service grafana-server restart');
-        }, 5000);
-
-        sendSlackMessage('*Grafana restarting!*', 'Grafana restarting!');
-        res.send('updated');
+                        exec('sudo service grafana-server restart', (error) => {
+                            if(error) {
+                                sendSlackMessage('*Grafana error:* ' + error, 'Grafana error: ' + error, '#ff6961');
+                                res.send(error);
+                            } else {
+                                sendSlackMessage('*Grafana restarted!*', 'Grafana restarted!', '#77dd77');
+                                res.send('updated');
+                            }
+                        });
+                    }
+                });
+            }
+        });
     });
 
-    function sendSlackMessage(message, fallback) {
+    function sendSlackMessage(message, fallback, color) {
         slack.send({
             icon_url: 'https://static.thenounproject.com/png/38239-200.png',
             username: 'BitCraft API',
             attachments: [
                 {
                     fallback: fallback,
-                    color: '#77dd77',
+                    color: color,
                     text: message
                 }
             ]
