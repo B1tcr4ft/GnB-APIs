@@ -101,6 +101,11 @@ module.exports = function(app, db) {
         })
     });
 
+    app.post('/api/read-from-db', (req, res) => {
+        const statusCode = readFromDb(req.body.httpUrl, req.body.queryParams);
+        res.send(statusCode);
+    });
+
     app.post('/api/save/:id', (req, res) => {
         let filePath = `./public/rete_${req.params.id}.json`;
         if (fs.existsSync(filePath)) {
@@ -133,20 +138,32 @@ module.exports = function(app, db) {
         }
     });
 
+    app.use((req, res)=>{
+        res.send('<h1>404 Page not Found</h1> <h2>ho capito che siam veloci ma dacci almeno il weekend</h2>');
+    });
+
     function writeOnDb(httpUrl,
                        queryParams,
                        data){
         request
             .post(`${httpUrl}${queryParams}`, {form:data})
-            .on('response', (response) => {
-                return response.statusCode;
+            .on('response', (res) => {
+                return res.statusCode;
             });
 
     }
-
+    /**
+     * Query data from specific database*/
     function readFromDb(httpUrl,
                         queryParams) {
-
+        request
+            .get(`${httpUrl}${queryParams}`)
+            .on('error', function(err) {
+                console.log(err)
+            })
+            .on('data', function(data) {
+                // decompressed data as it is received
+                console.log(JSON.parse(data).results[0].series[0].values);
+            });
     }
-
 };
