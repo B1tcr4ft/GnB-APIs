@@ -25,6 +25,7 @@ module.exports = function(app) {
     });
 
     app.post('/update/grafana', (req, res) => {
+        let oldTime = (new Date()).getTime();
         sendSlackMessage('*Grafana updating...*', 'Grafana updating...', '#ffb347');
 
         exec('cd /var/lib/grafana/plugins/gnb && git pull', (error) => {
@@ -39,7 +40,8 @@ module.exports = function(app) {
                             if(error) {
                                 sendSlackMessage('*Grafana error:* ' + error, 'Grafana error: ' + error, '#ff6961');
                             } else {
-                                sendSlackMessage('*Grafana updated!*', 'Grafana updated!', '#77dd77');
+                                let amountTime = ((new Date()).getTime() - oldTime)/1000;
+                                sendSlackMessage('*Grafana updated!* (' + amountTime + 's)', 'Grafana updated! (' + amountTime + 's)', '#77dd77');
                             }
                         });
                     }
