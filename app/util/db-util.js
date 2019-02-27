@@ -3,6 +3,12 @@ const {Network} = require('gnb-network/node');
 
 var exports = module.exports = {};
 
+/**
+ * TODO complete documentation
+ * @param httpUrl {string} url of the database
+ * @param queryParams {string} query parameters
+ * @param data
+ */
 function writeOnDb(httpUrl,
                    queryParams,
                    data){
@@ -13,9 +19,12 @@ function writeOnDb(httpUrl,
         });
 
 }
+
 /**
  * Query data from specific database
- * */
+ * @param httpUrl {string} url of the database
+ * @param queryParams {string} query parameters
+ */
 function readFromDb(httpUrl,
                     queryParams) {
     request
@@ -35,7 +44,7 @@ function readFromDb(httpUrl,
  * @param updatedValues {JSON} JSON containing for each node of a network, the updated states' values.
  * @returns something
  * */
-function updateNetwork(network, updatedValues){
+function updateNetwork(network, updatedValues) {
     //assemble httpUrl
     let httpUrl = newtwork.DBWriteUrl;
 
