@@ -28,28 +28,26 @@ module.exports = function(app) {
         exec('cd /var/lib/grafana/plugins/gnb && git pull', (error) => {
             if(error) {
                 sendSlackMessage('*Grafana error:* ' + error, 'Grafana error: ' + error, '#ff6961');
-                res.send(error);
             } else {
                 exec('cd /var/lib/grafana/plugins/gnb && npm install', (error) => {
                     if(error) {
                         sendSlackMessage('*Grafana error:* ' + error, 'Grafana error: ' + error, '#ff6961');
-                        res.send(error);
                     } else {
                         sendSlackMessage('*Grafana restarting...*', 'Grafana restarting...', '#ffb347');
 
                         exec('sudo service grafana-server restart', (error) => {
                             if(error) {
                                 sendSlackMessage('*Grafana error:* ' + error, 'Grafana error: ' + error, '#ff6961');
-                                res.send(error);
                             } else {
                                 sendSlackMessage('*Grafana restarted!*', 'Grafana restarted!', '#77dd77');
-                                res.send('updated');
                             }
                         });
                     }
                 });
             }
         });
+
+        res.send('updating');
     });
 
     function sendSlackMessage(message, fallback, color) {
