@@ -1,4 +1,5 @@
-const { getNetworkFromJSON } = require('gnb-network/node');
+const { Network } = require('gnb-network/node');
+const { updateNetwork } = require('../util/network-util');
 const fs = require('fs');
 const request = require('request');
 
@@ -33,7 +34,7 @@ module.exports = function(app, db) {
     });
 
     app.post('/api/retrieve/all', (req, res) => {
-        let path = require('path');
+        let path = require('path'); //TODO check if it's necessary
         let dirPath = "public/";
         let list=[];
         fs.readdir(dirPath, function (err, files) {
@@ -65,11 +66,10 @@ module.exports = function(app, db) {
                 if (err) {
                     res.send('file not found');
                 } else {
-                    let network = getNetworkFromJSON(JSON.parse(data));
+                    let network = Network.fromJSON(JSON.parse(data));
 
                     clockID[req.params.id] = setInterval(function () {
-                        //TODO fix this
-                        //network.update();
+                        updateNetwork(network);
                     }, network.refreshTime);
 
                     res.send('ok');
