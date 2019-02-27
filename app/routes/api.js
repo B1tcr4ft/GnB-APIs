@@ -16,7 +16,7 @@ module.exports = function(app, db) {
 
     // Here I need to make calls to influx api directly to update measurements.
     app.post('/api/write-on-db/', (req, res) => {
-        const statusCode = writeOnDb(req.body.httpUrl, req.body.dbPort, req.body.queryParams, req.body.dataToSend);
+        const statusCode = writeOnDb(req.body.httpUrl, req.body.queryParams, req.body.dataToSend);
         res.send(statusCode);
     });
 
