@@ -1,7 +1,7 @@
 const request = require('request');
 const {Network} = require('gnb-network/node');
 
-var exports = module.exports = {};
+let exports = module.exports = {};
 
 /**
  * TODO complete documentation
