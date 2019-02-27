@@ -37,17 +37,23 @@ function readFromDb(httpUrl,
  * */
 function updateNetwork(network, updatedValues){
     //assemble httpUrl
-    let httpUrl = '';
-    //httpUrl +=
+    let httpUrl = newtwork.DBWriteUrl;
 
     //compose queryParams
-    let queryParams = '';
-    //scan updatedValues and compose dataToSend
+    let queryParams = `/write/db=${newtwork.DBWriteName}&precision=s`;
 
+    //scan updatedValues and compose dataToSend
+    let dataToSend = "";
+    for (let node in updatedValues) {
+        for (let node_state in node.states) {
+            dataToSend.concat(`${network.name},${node.id}_${node_state.name}=${node_state.value}\n`);
+        }
+    }
+    console.log(dataToSend);
     //call to writeOnDb
-    //TODO scoprire come inviare punti multipli per la scrittura su influx
-    writeOnDb(httpUrl, queryParams, data);
+    writeOnDb(httpUrl, queryParams, dataToSend);
 }
 
 exports.writeOnDb = writeOnDb;
+exports.readFromDb = readFromDb;
 exports.updateNetwork = updateNetwork;

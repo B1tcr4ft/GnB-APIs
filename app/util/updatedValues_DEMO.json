@@ -1,0 +1,18 @@
+[
+  {
+    "id":"A",
+    "states":[
+      {
+        "name":"Stato 0",
+        "value":100
+      },
+      {
+        "name":"Stato 1",
+        "value":0
+      }
+    ]
+  },
+  {
+    "id":"B"
+  }
+]
