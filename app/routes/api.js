@@ -5,7 +5,7 @@ const fs = require('fs');
 
 let clockID = [];
 
-module.exports = function(app, db) {
+module.exports = function(app) {
 
     app.get('/', (req, res) => {
         res.redirect('/api/');

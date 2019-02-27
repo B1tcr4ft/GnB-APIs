@@ -1,9 +1,9 @@
 const api = require('./api');
 const update = require('./update'); // TODO remove this before release
 
-module.exports = function(app, db) {
-    api(app, db);
-    update(app, db);
+module.exports = function(app) {
+    api(app);
+    update(app);
     // Other route groups could go here, in the future
 
     //TODO

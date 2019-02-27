@@ -2,7 +2,7 @@ const { exec } = require('child_process');
 const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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';
 const slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
 
-module.exports = function(app, db) {
+module.exports = function(app) {
 
     app.post('/update/api', (req, res) => {
         exec('cd /home/gnb-backend && git pull');
