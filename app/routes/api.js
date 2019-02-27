@@ -1,4 +1,4 @@
-const { getNetworkFromJSON } = require('../util/json-util');
+const { getNetworkFromJSON } = require('gnb-network/node');
 const fs = require('fs');
 const request = require('request');
 

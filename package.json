@@ -10,9 +10,9 @@
   "author": "BitCraft",
   "license": "MIT",
   "dependencies": {
+    "gnb-network": "gitlab:bitcrafters/gnb-network",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "jsbayes": "^0.1.0",
     "path": "^0.12.7",
     "request": "^2.88.0",
     "slack-notify": "^0.1.7"
