@@ -1,18 +1,20 @@
-require('./state');
-require('./sensor');
+const { State } = require('./state');
+const { Sensor } = require('./sensor');
 
-class Node {
+var exports = module.exports = {};
+
+exports.Node = class {
     /**
      * Build a node instance
-     * @param ID {string} the node ID
+     * @param id {string} the node id
      * @param name {string} the node name
      * @param parents {string[]} list of parent nodes' ID
      * @param states {State[]} list of states
      * @param cpt {array} list of cpts
      * @param sensor {Sensor} the sensor specs
      */
-    constructor(ID, name, parents, states, cpt, sensor) {
-        this.ID = ID;
+    constructor(id, name, parents, states, cpt, sensor) {
+        this.id = id;
         this.name = name;
         this.parents = parents;
         this.states = states;
@@ -21,14 +23,13 @@ class Node {
     }
 
     /**
-     * TODO check if it works
      * Get a node instance from a JSON containing
      * its definition
      * @param json {JSON} the json definition
      * @return {Node} the node instance
      */
     static fromJSON(json) {
-        let ID = json.ID;
+        let id = json.id;
         let name = json.name;
         let parents = json.parents;
         let states = json.states.map(state => State.fromJSON(state));
@@ -42,6 +43,6 @@ class Node {
 
         let sensor = Sensor.fromJSON(json.sensor);
 
-        return new Node(ID, name, parents, states, cpt, sensor);
+        return new exports.Node(id, name, parents, states, cpt, sensor);
     }
-}
+};

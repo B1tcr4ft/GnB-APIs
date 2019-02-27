@@ -1,8 +1,10 @@
-require('./node');
-require('../util/json-util');
+const { getJSONFromNetwork, getNetworkFromJSON } = require("../util/json-util");
+const { Node } = require('./node');
 const jsbayes = require('jsbayes');
 
-class Network {
+var exports = module.exports = {};
+
+exports.Network = class {
     /**
      * Build a network instance
      * @param id {string} the network id
@@ -17,30 +19,21 @@ class Network {
         this.DBWriteName = DBWriteName;
         this.refreshTime = refreshTime;
         this.nodes = nodes;
-
-        this.makeGraph();
+        this.graph = this.makeGraph();
     }
 
-    /**
-     * TODO
-     * I'd like to make this function private but idk how to make it
-     */
     makeGraph() {
-        if(this.graph != null) {
-            return;
-        }
-
         let graph = jsbayes.newGraph();
 
         //creating the nodes
         this.nodes.forEach(node => {
             let states = node.states.map(state => state.name);
-            graph.addNode(node.ID, states);
+            graph.addNode(node.id, states);
         });
 
         //adding data to nodes
         this.nodes.forEach(node => {
-            let graphNode = graph.node(node.ID);
+            let graphNode = graph.node(node.id);
 
             //setting parent nodes
             node.parents.forEach(parent => graphNode.addParent(graph.node(parent)));
@@ -51,7 +44,7 @@ class Network {
 
         graph.sample(20000);
 
-        this.graph = graph;
+        return graph;
     }
 
     /**
@@ -80,4 +73,4 @@ class Network {
     static fromJSON(json) {
         return getNetworkFromJSON(json);
     }
-}
+};
