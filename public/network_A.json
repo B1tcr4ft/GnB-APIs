@@ -3,7 +3,7 @@
 	"name": "Rete Bayesiana A",
 	
 	"databaseWriteName": "telegraf",
-    "databaseWriteUrl" : "http://168.83.74.78:8086",
+    "databaseWriteUrl" : "http://68.183.74.78:8086",
     "databaseWriteUser" : "",
     "databaseWritePassword" : "",
 	"refreshTime": 5000, 
@@ -25,7 +25,7 @@
 			],
 
 			"sensor": {
-				"databaseSensorUrl": "http://168.83.74.78:8086",
+				"databaseSensorUrl": "http://68.183.74.78:8086",
 				"databaseSensorUser": "",
 				"databaseSensorPassword": "",
 				"databaseSensorName": "telegraf",
@@ -48,7 +48,7 @@
 			],
 			
 			"sensor": {
-                "databaseSensorUrl": "http://168.83.74.78:8086",
+                "databaseSensorUrl": "http://68.183.74.78:8086",
                 "databaseSensorUser": "",
                 "databaseSensorPassword": "",
                 "databaseSensorName": "telegraf",
