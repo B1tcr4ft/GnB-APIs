@@ -11,17 +11,24 @@ function updateNetwork(network) {
     //update node states
     network.nodes.forEach(node => {
         if(node.hasSensor()) {
-            let value = getSensorValue(node.sensor);
-            let state = node.getState(value);
-
-            network.graph.observe(node.id, state);
+            getSensorValue(node.sensor).then((data, err) => {
+                if(err) {
+                    console.log(err);
+                } else {
+                    let state = node.getState(data);
+                    network.graph.observe(node.id, state);
+                }
+            });
         }
     });
     network.graph.sample(20000);
 
     //query node states
+    let dataToWrite;
     network.nodes.forEach(node => {
-        console.log(network.graph.node(node.id).probs()); //TODO
+        dataToWrite.nodes.push(node);
+        node.states[0].name;
+        console.log('Nodo ' + node.id + ': ' + network.graph.node(node.id).probs()); //TODO
         //writeNetworkStates(network, states);
     });
 }
@@ -30,13 +37,21 @@ function updateNetwork(network) {
  * Get the current value of the sensor
  * connected by the node
  * @param sensor {Sensor} the sensor
- * @returns {number} the value of the sensor latest registered
+ * @returns {Promise} the value of the sensor latest registered
  */
 function getSensorValue(sensor) {
-    let httpUrl = sensor.DBSensorUrl;
-    let queryParams = `/query?db=${sensor.DBSensorName}&q=SELECT ${sensor.DBSensorColumn} from ${sensor.DBSensorTable} ORDER BY time DESC LIMIT 1`;
-    let values = readFromDb(httpUrl, queryParams);
-    return values[0][1];
+    return new Promise((resolve, reject) => {
+        let httpUrl = sensor.DBSensorUrl;
+        let queryParams = `/query?db=${sensor.DBSensorName}&q=SELECT ${sensor.DBSensorColumn} FROM ${sensor.DBSensorTable} ORDER BY time DESC LIMIT 1`;
+
+        readFromDb(httpUrl, queryParams).then((data, err) => {
+            if(err) {
+                reject(err);
+            } else {
+                resolve(data[0][1]);
+            }
+        });
+    });
 }
 
 /**
