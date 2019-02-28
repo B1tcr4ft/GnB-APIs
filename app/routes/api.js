@@ -137,4 +137,22 @@ module.exports = function(app) {
             }));
         });
     });
+
+    function getGraphFromId(id){
+        let filePath = './public/network_' + id + '.json';
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                console.error(err);
+                res.send('<h1>file not found</h1>');
+            } else {
+                res.send(JSON.parse(data));
+            }
+        });
+    }
+
+    app.get('/api/graph/:id', (req, res) => {
+        let graphObj = getGraphFromId(req.params.id);
+        let net = new Network(graphObj.id, graphObj.name, graphObj.DBWriteName, graphObj.DBWriteUrl, graphObj.DBWriteUser, graphObj.DBWritePassword, 1000, graphObj.nodes);
+        res.send(net);
+    });
 };
