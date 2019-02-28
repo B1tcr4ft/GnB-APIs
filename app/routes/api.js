@@ -30,6 +30,29 @@ module.exports = function(app) {
         }
     });
 
+    app.get('/api/retrieve/all', (req, res) => {
+        let dirPath = "public/";
+        let list=[];
+        fs.readdir(dirPath, function (err, files) {
+            if (err) {
+                return console.log('Unable to scan dir ' + err);
+            }
+            files.forEach(function (file) {
+                if(file !== '.gitkeep') {
+                    let contents = fs.readFileSync(dirPath+file, 'utf8');
+                    let data=JSON.parse(contents);
+                    let bayesianObject={};
+                    bayesianObject.id=data.id;
+                    bayesianObject.name=data.name;
+                    list.push(bayesianObject);
+                    console.log(list);
+                }
+            });
+            console.log(list);
+            res.send(list);
+        });
+    });
+
     app.get('/api/retrieve/:id', (req, res) => {
         let filePath = `./public/network_${req.params.id}.json`;
         fs.readFile(filePath, (err, data) => {
@@ -78,29 +101,6 @@ module.exports = function(app) {
     app.post('/api/write-on-db/', (req, res) => {
         const statusCode = writeOnDb(req.body.httpUrl, req.body.queryParams, req.body.dataToSend);
         res.send(statusCode);
-    });
-
-    app.get('/api/retrieve/all', (req, res) => {
-        let dirPath = "public/";
-        let list=[];
-        fs.readdir(dirPath, function (err, files) {
-            if (err) {
-                return console.log('Unable to scan dir ' + err);
-            }
-            files.forEach(function (file) {
-                if(file !== '.gitkeep') {
-                    let contents = fs.readFileSync(dirPath+file, 'utf8');
-                    let data=JSON.parse(contents);
-                    let bayesianObject={};
-                    bayesianObject.id=data.id;
-                    bayesianObject.name=data.name;
-                    list.push(bayesianObject);
-                    console.log(list);
-                }
-            });
-            console.log(list);
-            res.send(list);
-        });
     });
 
     app.post('/api/config', (req, res) => {
