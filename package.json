@@ -10,12 +10,13 @@
   "author": "BitCraft",
   "license": "MIT",
   "dependencies": {
-    "gnb-network": "gitlab:bitcrafters/gnb-network",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
+    "gnb-network": "gitlab:bitcrafters/gnb-network",
     "path": "^0.12.7",
     "request": "^2.88.0",
-    "slack-notify": "^0.1.7"
+    "slack-notify": "^0.1.7",
+    "uid-safe": "^2.1.5"
   },
   "devDependencies": {
     "nodemon": "^1.18.10",

@@ -5,7 +5,8 @@ const fs = require('fs');
 const uid = require('uid-safe');
 
 
-let clockID = [];
+let clockListID = [];
+let activeNetworksList = [];
 
 module.exports = function(app) {
 
@@ -22,18 +23,15 @@ module.exports = function(app) {
         if (!fs.existsSync(filePath)) {
             res.send('network with this id does not exist');
         } else {
-            fs.unlink(filePath, (err => {
-                if(err) {
-                    res.send(err);
-                } else {
-                    res.send('bayesian network has been deleted!');
-                }
-            }))
+            fs.unlink(filePath, err => {
+                if(err) throw err;
+                res.send('bayesian network has been deleted!');
+            })
         }
     });
 
     app.get('/api/retrieve/:id', (req, res) => {
-        let filePath = `./public/rete_${req.params.id}.json`;
+        let filePath = `./public/newtwork_${req.params.id}.json`;
         fs.readFile(filePath, (err, data) => {
             if (err) {
                 console.error(err);
@@ -45,7 +43,7 @@ module.exports = function(app) {
     });
 
     app.get('/api/start/:id', (req, res) => {
-        if(clockID[req.params.id]) {
+        if(clockListID[req.params.id]) {
             res.send('process already started for this network');
         } else {
             let filePath = `./public/rete_${req.params.id}.json`;
@@ -54,8 +52,8 @@ module.exports = function(app) {
                     res.send('file not found');
                 } else {
                     let network = Network.fromJSON(JSON.parse(data));
-
-                    clockID[req.params.id] = setInterval(function () {
+                    activeNetworksList[network.id] = network;
+                    clockListID[req.params.id] = setInterval(function () {
                         updateNetwork(network);
                     }, network.refreshTime);
 
@@ -66,10 +64,10 @@ module.exports = function(app) {
     });
 
     app.get('/api/stop/:id', (req, res) => {
-        if(clockID[req.params.id]) {
-            clearInterval(clockID[req.params.id]);
-            clockID = clockID.filter(item => item !== req.params.id);
-
+        if(clockListID[req.params.id]) {
+            clearInterval(clockListID[req.params.id]);
+            clockListID.splice(req.params.id, 1);
+            activeNetworksList.splice(req.params.id, 1);
             res.send('ok');
         } else {
             res.send('no processes running for this network');
@@ -82,7 +80,7 @@ module.exports = function(app) {
         res.send(statusCode);
     });
 
-    app.post('/api/retrieve/all', (req, res) => {  //TODO check if post is appropriate
+    app.post('/api/retrieve/all', (req, res) => {  //TODO check if post method is appropriate
         let path = require('path'); //TODO check if it's necessary
         let dirPath = "public/";
         let list=[];
@@ -123,21 +121,21 @@ module.exports = function(app) {
         res.send(statusCode);
     });
 
-    app.post('/api/save/:id', (req, res) => {
-        let filePath = `./public/rete_${req.params.id}.json`;
-        if (fs.existsSync(filePath)) {
-            res.send('cannot overwrite existing network with same id');
-        } else {
-            req.body.id=req.params.id;
-            let data = JSON.stringify(req.body);
-            fs.writeFile(filePath, data, (err => {
-                if (err) {
-                    res.send(err);
-                } else {
-                    res.send('bayesian network has been saved');
-                }
-            }));
-        }
-    });
+    app.post('/api/save/', (req, res) => {
+        //generate uid
+        uid(5, (err, id) => {
+            if (err) throw err;
 
+            //insert (or override if already exists) uid in network json definition
+            req.body.id = id;
+            let data = JSON.stringify(req.body);
+
+            //save network with filename in this form: network_uid.json
+            let filePath = `./public/network_${id}.json`;
+            fs.writeFile(filePath, data, (err => {
+                if (err) throw err;
+                res.send('bayesian network has been saved');
+            }));
+        });
+    });
 };
