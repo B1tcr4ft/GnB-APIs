@@ -11,7 +11,7 @@ function updateNetwork(network) {
     //update node states
     network.nodes.forEach(node => {
         if(node.hasSensor()) {
-            let value = getSensorValue(node);
+            let value = getSensorValue(node.sensor);
             let state = node.getState(value);
 
             network.graph.observe(node.id, state);
@@ -31,10 +31,10 @@ function updateNetwork(network) {
  * TODO
  * Get the current value of the sensor
  * connected by the node
- * @param node {Node} the node connected to the sensor
+ * @param sensor {Sensor} the sensor
  * @returns {number} the value of the sensor
  */
-function getSensorValue(node) {
+function getSensorValue(sensor) {
     //check node.sensor to see the database values
     return 0;
 }
