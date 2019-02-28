@@ -2,6 +2,8 @@ const { Network } = require('gnb-network/node');
 const { updateNetwork } = require('../util/network-util');
 const { readFromDb, writeOnDb } = require('../util/db-util');
 const fs = require('fs');
+const uid = require('uid-safe');
+
 
 let clockID = [];
 
@@ -15,10 +17,19 @@ module.exports = function(app) {
        res.send('<h1>Benvenuti nella API di bitcraft</h1>');
     });
 
-    // Here I need to make calls to influx api directly to update measurements.
-    app.post('/api/write-on-db/', (req, res) => {
-        const statusCode = writeOnDb(req.body.httpUrl, req.body.queryParams, req.body.dataToSend);
-        res.send(statusCode);
+    app.get('/api/delete/:id', (req, res) => {
+        let filePath = `./public/rete_${req.params.id}.json`;
+        if (!fs.existsSync(filePath)) {
+            res.send('network with this id does not exist');
+        } else {
+            fs.unlink(filePath, (err => {
+                if(err) {
+                    res.send(err);
+                } else {
+                    res.send('bayesian network has been deleted!');
+                }
+            }))
+        }
     });
 
     app.get('/api/retrieve/:id', (req, res) => {
@@ -30,30 +41,6 @@ module.exports = function(app) {
             } else {
                 res.send(JSON.parse(data));
             }
-        });
-    });
-
-    app.post('/api/retrieve/all', (req, res) => {
-        let path = require('path'); //TODO check if it's necessary
-        let dirPath = "public/";
-        let list=[];
-        fs.readdir(dirPath, function (err, files) {
-            if (err) {
-                return console.log('Unable to scan dir ' + err);
-            }
-            files.forEach(function (file) {
-                if(file !== '.gitkeep') {
-                    let contents = fs.readFileSync(dirPath+file, 'utf8');
-                    let data=JSON.parse(contents);
-                    let bayesianObject={};
-                    bayesianObject.id=data.id;
-                    bayesianObject.name=data.name;
-                    list.push(bayesianObject);
-                    console.log(list);
-                }
-            });
-            console.log(list);
-            res.send(list);
         });
     });
 
@@ -89,6 +76,36 @@ module.exports = function(app) {
         }
     });
 
+    // Here I need to make calls to influx api directly to update measurements.
+    app.post('/api/write-on-db/', (req, res) => {
+        const statusCode = writeOnDb(req.body.httpUrl, req.body.queryParams, req.body.dataToSend);
+        res.send(statusCode);
+    });
+
+    app.post('/api/retrieve/all', (req, res) => {  //TODO check if post is appropriate
+        let path = require('path'); //TODO check if it's necessary
+        let dirPath = "public/";
+        let list=[];
+        fs.readdir(dirPath, function (err, files) {
+            if (err) {
+                return console.log('Unable to scan dir ' + err);
+            }
+            files.forEach(function (file) {
+                if(file !== '.gitkeep') {
+                    let contents = fs.readFileSync(dirPath+file, 'utf8');
+                    let data=JSON.parse(contents);
+                    let bayesianObject={};
+                    bayesianObject.id=data.id;
+                    bayesianObject.name=data.name;
+                    list.push(bayesianObject);
+                    console.log(list);
+                }
+            });
+            console.log(list);
+            res.send(list);
+        });
+    });
+
     app.post('/api/config', (req, res) => {
         let data = JSON.stringify(req.body);
         let filePath = `./public/config.json`;
@@ -120,21 +137,6 @@ module.exports = function(app) {
                     res.send('bayesian network has been saved');
                 }
             }));
-        }
-    });
-
-    app.get('/api/delete/:id', (req, res) => {
-        let filePath = `./public/rete_${req.params.id}.json`;
-        if (!fs.existsSync(filePath)) {
-            res.send('network with this id does not exist');
-        } else {
-            fs.unlink(filePath, (err => {
-                if(err) {
-                    res.send(err);
-                } else {
-                    res.send('bayesian network has been deleted!');
-                }
-            }))
         }
     });
 
