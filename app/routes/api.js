@@ -155,7 +155,7 @@ module.exports = function(app) {
                     samples: 15000
                 });
 
-                res.send(dom.window.document.querySelector("body").innerHTML);
+                res.send(dom.window.document.getElementById("bbn").innerHTML);
             }
         });
     });
@@ -174,7 +174,7 @@ module.exports = function(app) {
             samples: 15000
         });
 
-        res.send(dom.window.document.querySelector("body").innerHTML);
+        res.send(dom.window.document.getElementById("bbn").innerHTML);
     });
 
     function getNetworkFromId(id){
