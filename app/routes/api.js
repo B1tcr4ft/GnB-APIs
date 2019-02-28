@@ -80,8 +80,7 @@ module.exports = function(app) {
         res.send(statusCode);
     });
 
-    app.post('/api/retrieve/all', (req, res) => {  //TODO check if post method is appropriate
-        let path = require('path'); //TODO check if it's necessary
+    app.get('/api/retrieve/all', (req, res) => {
         let dirPath = "public/";
         let list=[];
         fs.readdir(dirPath, function (err, files) {
