@@ -28,15 +28,16 @@ function updateNetwork(network) {
 }
 
 /**
- * TODO
  * Get the current value of the sensor
  * connected by the node
  * @param sensor {Sensor} the sensor
- * @returns {number} the value of the sensor
+ * @returns {number} the value of the sensor latest registered
  */
 function getSensorValue(sensor) {
-    //check node.sensor to see the database values
-    return 0;
+    let httpUrl = sensor.DBSensorUrl;
+    let queryParams = `/query?db=${sensor.DBSensorName}&q=SELECT ${sensor.DBSensorColumn} from ${sensor.DBSensorTable} ORDER BY time DESC LIMIT 1`;
+    let values = readFromDb(httpUrl, queryParams);
+    return values[0][1];
 }
 
 exports.updateNetwork = updateNetwork;
