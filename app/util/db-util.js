@@ -38,4 +38,3 @@ function readFromDb(httpUrl, queryParams) {
 
 exports.writeOnDb = writeOnDb;
 exports.readFromDb = readFromDb;
-exports.writeNetworkStates = writeNetworkStates;
