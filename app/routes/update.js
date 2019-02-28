@@ -47,12 +47,18 @@ module.exports = function(app) {
                     if(error) {
                         sendSlackMessage('*Grafana plugin error:* ' + error, 'Grafana plugin error: ' + error, '#ff6961');
                     } else {
-                        exec('sudo service grafana-server restart', (error) => {
+                        exec('cd /var/lib/grafana/plugins/gnb && npm run build', (error) => {
                             if(error) {
                                 sendSlackMessage('*Grafana plugin error:* ' + error, 'Grafana plugin error: ' + error, '#ff6961');
                             } else {
-                                let amountTime = ((new Date()).getTime() - oldTime)/1000;
-                                sendSlackMessage('*Grafana plugin updated!* (' + amountTime + 's)', 'Grafana plugin updated! (' + amountTime + 's)', '#77dd77');
+                                exec('sudo service grafana-server restart', (error) => {
+                                    if(error) {
+                                        sendSlackMessage('*Grafana plugin error:* ' + error, 'Grafana plugin error: ' + error, '#ff6961');
+                                    } else {
+                                        let amountTime = ((new Date()).getTime() - oldTime)/1000;
+                                        sendSlackMessage('*Grafana plugin updated!* (' + amountTime + 's)', 'Grafana plugin updated! (' + amountTime + 's)', '#77dd77');
+                                    }
+                                });
                             }
                         });
                     }
