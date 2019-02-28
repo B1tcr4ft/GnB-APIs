@@ -19,7 +19,7 @@ module.exports = function(app) {
     });
 
     app.get('/api/delete/:id', (req, res) => {
-        let filePath = `./public/rete_${req.params.id}.json`;
+        let filePath = `./public/network_${req.params.id}.json`;
         if (!fs.existsSync(filePath)) {
             res.send('network with this id does not exist');
         } else {
@@ -31,7 +31,7 @@ module.exports = function(app) {
     });
 
     app.get('/api/retrieve/:id', (req, res) => {
-        let filePath = `./public/newtwork_${req.params.id}.json`;
+        let filePath = `./public/network_${req.params.id}.json`;
         fs.readFile(filePath, (err, data) => {
             if (err) {
                 console.error(err);
@@ -46,7 +46,7 @@ module.exports = function(app) {
         if(clockListID[req.params.id]) {
             res.send('process already started for this network');
         } else {
-            let filePath = `./public/rete_${req.params.id}.json`;
+            let filePath = `./public/network_${req.params.id}.json`;
             fs.readFile(filePath, (err, data) => {
                 if (err) {
                     res.send('file not found');
