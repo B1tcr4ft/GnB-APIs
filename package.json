@@ -13,6 +13,8 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "gnb-network": "gitlab:bitcrafters/gnb-network",
+    "jsbayes-viz": "0.0.7",
+    "jsdom": "10.0.0",
     "path": "^0.12.7",
     "request": "^2.88.0",
     "slack-notify": "^0.1.7",

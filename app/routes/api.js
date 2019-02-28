@@ -1,9 +1,10 @@
 const { Network } = require('gnb-network/node');
+const { JSDOM } = require('jsdom');
 const { updateNetwork } = require('../util/network-util');
 const { readFromDb, writeOnDb } = require('../util/db-util');
 const fs = require('fs');
 const uid = require('uid-safe');
-
+const jsbayesviz = require('jsbayes-viz');
 
 let clockListID = [];
 let activeNetworksList = [];
@@ -54,13 +55,11 @@ module.exports = function(app) {
     });
 
     app.get('/api/retrieve/:id', (req, res) => {
-        let filePath = `./public/network_${req.params.id}.json`;
-        fs.readFile(filePath, (err, data) => {
-            if (err) {
-                console.error(err);
+        getNetworkFromId(req.params.id).then((data, error) => {
+            if(error) {
                 res.send('<h1>file not found</h1>');
             } else {
-                res.send(JSON.parse(data));
+                res.send(data);
             }
         });
     });
@@ -138,21 +137,56 @@ module.exports = function(app) {
         });
     });
 
-    function getGraphFromId(id){
-        let filePath = './public/network_' + id + '.json';
-        fs.readFile(filePath, (err, data) => {
-            if (err) {
-                console.error(err);
-                res.send('<h1>file not found</h1>');
+    app.get('/api/static-graph/:id', (req, res) => {
+        getNetworkFromId(req.params.id).then((data, err) => {
+            if(err) {
+                console.log(err);
             } else {
-                res.send(JSON.parse(data));
+                let network = Network.fromJSON(data);
+                network.graph.sample(100000);
+                let graph = jsbayesviz.fromGraph(network.graph);
+
+                const dom = new JSDOM('<svg id="bbn"></svg>');
+                jsbayesviz.draw({
+                    id: dom.window.document.querySelector('#bbn'),
+                    width: 800,
+                    height: 800,
+                    graph: graph,
+                    samples: 15000
+                });
+
+                res.send(dom.window.document.querySelector("body").innerHTML);
             }
         });
-    }
-
-    app.get('/api/graph/:id', (req, res) => {
-        let graphObj = getGraphFromId(req.params.id);
-        let net = new Network(graphObj.id, graphObj.name, graphObj.DBWriteName, graphObj.DBWriteUrl, graphObj.DBWriteUser, graphObj.DBWritePassword, 1000, graphObj.nodes);
-        res.send(net);
     });
+
+    app.get('/api/dynamic-graph/:id', (req, res) => {
+        let network = activeNetworksList[req.params.id];
+
+        let graph = jsbayesviz.fromGraph(network.graph);
+
+        const dom = new JSDOM('<svg id="bbn"></svg>');
+        jsbayesviz.draw({
+            id: dom.window.document.querySelector('#bbn'),
+            width: 800,
+            height: 800,
+            graph: graph,
+            samples: 15000
+        });
+
+        res.send(dom.window.document.querySelector("body").innerHTML);
+    });
+
+    function getNetworkFromId(id){
+        return new Promise((resolve, reject) => {
+            let filePath = './public/network_' + id + '.json';
+            fs.readFile(filePath, (err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(JSON.parse(data));
+                }
+            });
+        });
+    }
 };
