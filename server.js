@@ -1,3 +1,4 @@
+const { sendSlackMessage } = require('util/slack-util');
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
@@ -16,6 +17,7 @@ app.use(function(req, res, next) {
 });
 
 require('./app/routes')(app, {});
-app.listen(app.get("port"), function(){
+app.listen(app.get("port"), () => {
     console.log("server started on port " + app.get("port"));
+    sendSlackMessage('*API services started!*', 'API services started!', '#77dd77');
 });

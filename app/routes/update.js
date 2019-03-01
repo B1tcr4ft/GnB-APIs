@@ -1,12 +1,10 @@
 const { exec, spawn } = require('child_process');
-const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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';
-const slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
+const { sendSlackMessage } = require('../util/slack-util');
 
 module.exports = function(app) {
 
     app.post('/update/api', (req, res) => {
-        let oldTime = (new Date()).getTime();
-        sendSlackMessage('*API services updating...*', 'API services updating...', '#ffb347');
+        sendSlackMessage('*API services restarting...*', 'API services restarting...', '#ffb347');
 
         exec('cd /home/gnb-backend && git pull', (error) => {
             if(error) {
@@ -16,10 +14,7 @@ module.exports = function(app) {
                     if (error) {
                         sendSlackMessage('*API services error:* ' + error, 'API services error: ' + error, '#ff6961');
                     } else {
-                        let amountTime = ((new Date()).getTime() - oldTime)/1000;
-                        sendSlackMessage('*API services updated!* (' + amountTime + 's)', 'API services updated! (' + amountTime + 's)', '#77dd77');
-
-                        process.on("exit", function () {
+                        process.on("exit", () => {
                             spawn(process.argv.shift(), process.argv, {
                                 cwd: process.cwd(),
                                 detached : true,
@@ -68,18 +63,4 @@ module.exports = function(app) {
 
         res.send('updating');
     });
-
-    function sendSlackMessage(message, fallback, color) {
-        slack.send({
-            icon_url: 'https://static.thenounproject.com/png/38239-200.png',
-            username: 'BitCraft API',
-            attachments: [
-                {
-                    fallback: fallback,
-                    color: color,
-                    text: message
-                }
-            ]
-        });
-    }
 };
