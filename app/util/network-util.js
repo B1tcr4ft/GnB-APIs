@@ -12,7 +12,9 @@ function updateNetwork(network) {
     network.nodes.forEach(node => {
         if(node.hasSensor()) {
             let p = getSensorValue(node.sensor).then(data => {
+                console.log('data: ' + data);
                 let state = node.getState(data);
+                console.log('stato: ' + state);
                 network.graph.observe(node.id, state);
             }, error => {
                 console.log(error); //TODO handle error state
