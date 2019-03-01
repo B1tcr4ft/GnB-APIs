@@ -1,4 +1,4 @@
-const { sendSlackMessage } = require('util/slack-util');
+const { sendSlackMessage } = require('./app/util/slack-util');
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
