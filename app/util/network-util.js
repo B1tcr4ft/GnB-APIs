@@ -24,13 +24,23 @@ function updateNetwork(network) {
     network.graph.sample(20000);
 
     //query node states
-    let dataToWrite;
+    let dataToWrite = {};
+    dataToWrite.nodes = [];
     network.nodes.forEach(node => {
-        dataToWrite.nodes.push(node);
-        node.states[0].name;
-        console.log('Nodo ' + node.id + ': ' + network.graph.node(node.id).probs()); //TODO
-        //writeNetworkStates(network, states);
+        let objNode = {};
+        objNode.id = node.id;
+        objNode.states = [];
+
+        for (let i= 0; i<node.states.length; i++){
+            let state = {};
+            state.name = node.states[i].name;
+            state.value = network.graph.node(node.id).probs()[i];
+            objNode.states.push(state);
+        }
+
+        dataToWrite.nodes.push(objNode);
     });
+    writeNetworkStates(network, JSON.parse(JSON.stringify(dataToWrite))); //TODO check this
 }
 
 /**
@@ -71,7 +81,7 @@ function writeNetworkStates(network, updatedValues) {
     let dataToSend = "";
     updatedValues.nodes.forEach(node => {
         node.states.forEach(state => {
-            dataToSend.concat(`${network.name},${node.id}_${state.name}=${state.value}\n`);
+            dataToSend += `${network.id},${node.id}_${state.name}=${state.value}\n`;
         })
     });
     console.log(dataToSend); //TODO remove this
