@@ -6,7 +6,7 @@
     "databaseWriteUrl" : "http://68.183.74.78:8086",
     "databaseWriteUser" : "admin",
     "databaseWritePassword" : "B1tcraftswe",
-	"refreshTime": 5000, 
+	"refreshTime": 1000,
 	
 	"nodes": [
 		{

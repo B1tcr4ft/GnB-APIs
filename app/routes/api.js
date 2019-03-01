@@ -9,11 +9,7 @@ const jsbayesviz = require('jsbayes-viz');
 let clockList = [];
 let activeNetworkList = [];
 
-module.exports = function(app) {
-
-    app.get('/', (req, res) => {
-        res.redirect('/api/');
-    });
+module.exports = app => {
 
     app.get('/api/', (req, res) => {
        res.send('<h1>Benvenuti nella API di bitcraft</h1>');

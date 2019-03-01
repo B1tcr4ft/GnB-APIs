@@ -1,9 +1,9 @@
 const { exec, spawn } = require('child_process');
 const { sendSlackMessage } = require('../util/slack-util');
 
-module.exports = function(app) {
+module.exports = app => {
 
-    app.post('/update/api', (req, res) => {
+    app.post('/api', (req, res) => {
         sendSlackMessage('*API services restarting...*', 'API services restarting...', '#ffb347');
 
         exec('cd /home/gnb-backend && git pull', (error) => {
@@ -30,7 +30,7 @@ module.exports = function(app) {
         res.send('updated');
     });
 
-    app.post('/update/grafana', (req, res) => {
+    app.post('/grafana', (req, res) => {
         let oldTime = (new Date()).getTime();
         sendSlackMessage('*Grafana plugin updating...*', 'Grafana plugin updating...', '#ffb347');
 
