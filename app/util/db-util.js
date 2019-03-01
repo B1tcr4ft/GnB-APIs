@@ -13,7 +13,7 @@ var exports = module.exports = {};
 function writeOnDb(httpUrl, queryParams, data) {
     return new Promise((resolve, reject) => {
         request
-            .post(`${httpUrl}${queryParams}`, {form:data})
+            .post(`${httpUrl}${queryParams}`, {form: data})
             .on('error', error => {
                 reject(error);
             })

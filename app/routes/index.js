@@ -8,7 +8,7 @@ module.exports = app => {
     update(app);
     // Other route groups could go here, in the future
 
-    app.use((req, res)=>{
+    app.use((req, res) => {
         res.send('<h1>404 Page not Found</h1>');
     });
 };

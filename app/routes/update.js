@@ -1,5 +1,5 @@
-const { exec, spawn } = require('child_process');
-const { sendSlackMessage } = require('../util/slack-util');
+const {exec, spawn} = require('child_process');
+const {sendSlackMessage} = require('../util/slack-util');
 
 module.exports = app => {
 
@@ -7,7 +7,7 @@ module.exports = app => {
         sendSlackMessage('*API services restarting...*', 'API services restarting...', '#ffb347');
 
         exec('cd /home/gnb-backend && git pull', (error) => {
-            if(error) {
+            if (error) {
                 sendSlackMessage('*API services error:* ' + error, 'API services error: ' + error, '#ff6961');
             } else {
                 exec('cd /home/gnb-backend && npm install', (error) => {
@@ -17,7 +17,7 @@ module.exports = app => {
                         process.on("exit", () => {
                             spawn(process.argv.shift(), process.argv, {
                                 cwd: process.cwd(),
-                                detached : true,
+                                detached: true,
                                 stdio: "inherit"
                             });
                         });
@@ -35,22 +35,22 @@ module.exports = app => {
         sendSlackMessage('*Grafana plugin updating...*', 'Grafana plugin updating...', '#ffb347');
 
         exec('cd /var/lib/grafana/plugins/gnb && git pull', (error) => {
-            if(error) {
+            if (error) {
                 sendSlackMessage('*Grafana plugin error:* ' + error, 'Grafana plugin error: ' + error, '#ff6961');
             } else {
                 exec('cd /var/lib/grafana/plugins/gnb && npm install', (error) => {
-                    if(error) {
+                    if (error) {
                         sendSlackMessage('*Grafana plugin error:* ' + error, 'Grafana plugin error: ' + error, '#ff6961');
                     } else {
                         exec('cd /var/lib/grafana/plugins/gnb && npm run build', (error) => {
-                            if(error) {
+                            if (error) {
                                 sendSlackMessage('*Grafana plugin error:* ' + error, 'Grafana plugin error: ' + error, '#ff6961');
                             } else {
                                 exec('sudo service grafana-server restart', (error) => {
-                                    if(error) {
+                                    if (error) {
                                         sendSlackMessage('*Grafana plugin error:* ' + error, 'Grafana plugin error: ' + error, '#ff6961');
                                     } else {
-                                        let amountTime = ((new Date()).getTime() - oldTime)/1000;
+                                        let amountTime = ((new Date()).getTime() - oldTime) / 1000;
                                         sendSlackMessage('*Grafana plugin updated!* (' + amountTime + 's)', 'Grafana plugin updated! (' + amountTime + 's)', '#77dd77');
                                     }
                                 });

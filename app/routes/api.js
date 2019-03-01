@@ -1,7 +1,7 @@
-const { Network } = require('gnb-network/node');
-const { JSDOM } = require('jsdom');
-const { updateNetwork } = require('../util/network-util');
-const { readFromDb, writeOnDb } = require('../util/db-util');
+const {Network} = require('gnb-network/node');
+const {JSDOM} = require('jsdom');
+const {updateNetwork} = require('../util/network-util');
+const {readFromDb, writeOnDb} = require('../util/db-util');
 const fs = require('fs');
 const uid = require('uid-safe');
 const jsbayesviz = require('jsbayes-viz');
@@ -12,7 +12,7 @@ let activeNetworkList = [];
 module.exports = app => {
 
     app.get('/api/', (req, res) => {
-       res.send('<h1>Benvenuti nella API di bitcraft</h1>');
+        res.send('<h1>Benvenuti nella API di bitcraft</h1>');
     });
 
     app.get('/api/delete/:id', (req, res) => {
@@ -21,7 +21,7 @@ module.exports = app => {
             res.send('network with this id does not exist');
         } else {
             fs.unlink(filePath, error => {
-                if(error) {
+                if (error) {
                     res.send(error);
                 } else {
                     res.send('bayesian network has been deleted!');
@@ -32,18 +32,18 @@ module.exports = app => {
 
     app.get('/api/retrieve/all', (req, res) => {
         let dirPath = "./public/";
-        let list=[];
+        let list = [];
         fs.readdir(dirPath, (error, files) => {
             if (error) {
                 req.send(error);
             } else {
                 files.forEach(file => {
-                    if(file !== '.gitkeep') {
-                        let contents = fs.readFileSync(dirPath+file, 'utf8');
-                        let data=JSON.parse(contents);
-                        let bayesianObject={};
-                        bayesianObject.id=data.id;
-                        bayesianObject.name=data.name;
+                    if (file !== '.gitkeep') {
+                        let contents = fs.readFileSync(dirPath + file, 'utf8');
+                        let data = JSON.parse(contents);
+                        let bayesianObject = {};
+                        bayesianObject.id = data.id;
+                        bayesianObject.name = data.name;
                         list.push(bayesianObject);
                     }
                 });
@@ -61,7 +61,7 @@ module.exports = app => {
     });
 
     app.get('/api/start/:id', (req, res) => {
-        if(clockList[req.params.id]) {
+        if (clockList[req.params.id]) {
             res.send('process already started for this network');
         } else {
             let filePath = `./public/network_${req.params.id}.json`;
@@ -83,7 +83,7 @@ module.exports = app => {
     });
 
     app.get('/api/stop/:id', (req, res) => {
-        if(clockList[req.params.id]) {
+        if (clockList[req.params.id]) {
             clearInterval(clockList[req.params.id]);
 
             clockList = clockList.filter(val => val !== req.params.id);
@@ -104,7 +104,7 @@ module.exports = app => {
     });
 
     app.post('/api/read-from-db', (req, res) => {
-        readFromDb(req.body.httpUrl, req.body.queryParams).then(data =>{
+        readFromDb(req.body.httpUrl, req.body.queryParams).then(data => {
             res.send(data);
         }, error => {
             res.send(error);
@@ -156,7 +156,7 @@ module.exports = app => {
     });
 
     app.get('/api/dynamic-graph/:id', (req, res) => {
-        if(clockList[req.params.id]) {
+        if (clockList[req.params.id]) {
             let network = activeNetworkList[req.params.id];
             let graph = jsbayesviz.fromGraph(network.graph);
             let dom = new JSDOM('<svg id="bbn"></svg>');
@@ -175,7 +175,7 @@ module.exports = app => {
         }
     });
 
-    function getNetworkFromId(id){
+    function getNetworkFromId(id) {
         return new Promise((resolve, reject) => {
             let filePath = './public/network_' + id + '.json';
             fs.readFile(filePath, (error, data) => {

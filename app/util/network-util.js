@@ -1,4 +1,4 @@
-const { writeOnDb, readFromDb } = require('./db-util');
+const {writeOnDb, readFromDb} = require('./db-util');
 
 var exports = module.exports = {};
 
@@ -10,7 +10,7 @@ var exports = module.exports = {};
 function updateNetwork(network) {
     let promises = [];
     network.nodes.forEach(node => {
-        if(node.hasSensor()) {
+        if (node.hasSensor()) {
             let p = getSensorValue(node.sensor).then(data => {
                 let state = node.getState(data);
                 network.graph.observe(node.id, state);
@@ -33,7 +33,7 @@ function updateNetwork(network) {
             objNode.id = node.id;
             objNode.states = [];
 
-            for (let i= 0; i<node.states.length; i++){
+            for (let i = 0; i < node.states.length; i++) {
                 let state = {};
                 state.name = node.states[i].name;
                 state.value = network.graph.node(node.id).probs()[i];
