@@ -24,43 +24,43 @@ module.exports = function(app) {
         if (!fs.existsSync(filePath)) {
             res.send('network with this id does not exist');
         } else {
-            fs.unlink(filePath, err => {
-                if(err) throw err;
-                res.send('bayesian network has been deleted!');
+            fs.unlink(filePath, error => {
+                if(error) {
+                    res.send(error);
+                } else {
+                    res.send('bayesian network has been deleted!');
+                }
             })
         }
     });
 
     app.get('/api/retrieve/all', (req, res) => {
-        let dirPath = "public/";
+        let dirPath = "./public/";
         let list=[];
-        fs.readdir(dirPath, function (err, files) {
-            if (err) {
-                return console.log('Unable to scan dir ' + err);
+        fs.readdir(dirPath, (error, files) => {
+            if (error) {
+                req.send(error);
+            } else {
+                files.forEach(file => {
+                    if(file !== '.gitkeep') {
+                        let contents = fs.readFileSync(dirPath+file, 'utf8');
+                        let data=JSON.parse(contents);
+                        let bayesianObject={};
+                        bayesianObject.id=data.id;
+                        bayesianObject.name=data.name;
+                        list.push(bayesianObject);
+                    }
+                });
+                res.send(list);
             }
-            files.forEach(function (file) {
-                if(file !== '.gitkeep') {
-                    let contents = fs.readFileSync(dirPath+file, 'utf8');
-                    let data=JSON.parse(contents);
-                    let bayesianObject={};
-                    bayesianObject.id=data.id;
-                    bayesianObject.name=data.name;
-                    list.push(bayesianObject);
-                    console.log(list);
-                }
-            });
-            console.log(list);
-            res.send(list);
         });
     });
 
     app.get('/api/retrieve/:id', (req, res) => {
-        getNetworkFromId(req.params.id).then((data, error) => {
-            if(error) {
-                res.send('<h1>file not found</h1>');
-            } else {
-                res.send(data);
-            }
+        getNetworkFromId(req.params.id).then(data => {
+            res.send(data);
+        }, error => {
+            res.send(error);
         });
     });
 
@@ -69,18 +69,18 @@ module.exports = function(app) {
             res.send('process already started for this network');
         } else {
             let filePath = `./public/network_${req.params.id}.json`;
-            fs.readFile(filePath, (err, data) => {
-                if (err) {
-                    res.send('file not found');
+            fs.readFile(filePath, (error, data) => {
+                if (error) {
+                    res.send(error);
                 } else {
                     let network = Network.fromJSON(JSON.parse(data));
 
                     activeNetworkList[network.id] = network;
-                    clockList[req.params.id] = setInterval(function () {
+                    clockList[req.params.id] = setInterval(() => {
                         updateNetwork(network);
                     }, network.refreshTime);
 
-                    res.send('ok');
+                    res.send('network has been started');
                 }
             });
         }
@@ -90,109 +90,106 @@ module.exports = function(app) {
         if(clockList[req.params.id]) {
             clearInterval(clockList[req.params.id]);
 
-            clockList.splice(req.params.id, 1);
-            activeNetworkList.splice(req.params.id, 1);
+            clockList = clockList.filter(val => val !== req.params.id);
+            activeNetworkList = activeNetworkList.filter(val => val !== req.params.id);
 
-            res.send('ok');
+            res.send('network has been stopped');
         } else {
             res.send('no processes running for this network');
         }
     });
 
-    // Here I need to make calls to influx api directly to update measurements.
     app.post('/api/write-on-db/', (req, res) => {
-        const statusCode = writeOnDb(req.body.httpUrl, req.body.queryParams, req.body.dataToSend);
-        res.send(statusCode);
+        writeOnDb(req.body.httpUrl, req.body.queryParams, req.body.dataToSend).then(data => {
+            res.send(data);
+        }, error => {
+            res.send(error);
+        });
     });
 
     app.post('/api/read-from-db', (req, res) => {
-        const statusCode = readFromDb(req.body.httpUrl, req.body.queryParams);
-        res.send(statusCode);
+        readFromDb(req.body.httpUrl, req.body.queryParams).then(data =>{
+            res.send(data);
+        }, error => {
+            res.send(error);
+        });
     });
 
-    //TODO check if it's needed
-    app.post('/api/config', (req, res) => {
-        let data = JSON.stringify(req.body);
-        let filePath = `./public/config.json`;
-        fs.writeFile(filePath, data, (err) => {
-            if (err) {
-                res.send(err);
-            } else {
-                res.send('configuration for databases updated');
-            }
-        })
-    });
-
-    app.post('/api/save/', (req, res) => {
+    app.post('/api/save', (req, res) => {
         //generate uid
-        uid(5, (err, id) => {
-            if (err) throw err;
-
-            //insert (or override if already exists) uid in network json definition
-            req.body.id = id;
-            let data = JSON.stringify(req.body);
-
-            //save network with filename in this form: network_uid.json
-            let filePath = `./public/network_${id}.json`;
-            fs.writeFile(filePath, data, (err => {
-                if (err) throw err;
-                res.send('bayesian network has been saved');
-            }));
-        });
-    });
-
-    //TODO check if network has started
-    app.get('/api/static-graph/:id', (req, res) => {
-        getNetworkFromId(req.params.id).then((data, err) => {
-            if(err) {
-                console.log(err);
+        uid(5, (error, id) => {
+            if (error) {
+                res.send(error);
             } else {
-                let network = Network.fromJSON(data);
-                network.graph.sample(100000);
-                let graph = jsbayesviz.fromGraph(network.graph);
+                //insert (or override if already exists) uid in network json definition
+                req.body.id = id;
+                let data = JSON.stringify(req.body);
 
-                const dom = new JSDOM('<svg id="bbn"></svg>');
-                jsbayesviz.draw({
-                    id: dom.window.document.querySelector('#bbn'),
-                    width: 800,
-                    height: 800,
-                    graph: graph,
-                    samples: 15000
-                });
-
-                res.send(dom.window.document.getElementById("bbn").innerHTML);
+                //save network with filename in this form: network_uid.json
+                let filePath = `./public/network_${id}.json`;
+                fs.writeFile(filePath, data, (error => {
+                    if (error) {
+                        res.send(error);
+                    } else {
+                        res.send('bayesian network has been saved');
+                    }
+                }));
             }
         });
     });
 
-    //TODO check if network has started
-    app.get('/api/dynamic-graph/:id', (req, res) => {
-        let network = activeNetworkList[req.params.id];
+    app.get('/api/static-graph/:id', (req, res) => {
+        getNetworkFromId(req.params.id).then(data => {
+            let network = Network.fromJSON(data);
+            network.graph.sample(100000);
+            let graph = jsbayesviz.fromGraph(network.graph);
 
-        let graph = jsbayesviz.fromGraph(network.graph);
+            const dom = new JSDOM('<svg id="bbn"></svg>');
+            jsbayesviz.draw({
+                id: dom.window.document.querySelector('#bbn'),
+                width: 800,
+                height: 800,
+                graph: graph,
+                samples: 15000
+            });
 
-        const dom = new JSDOM('<svg id="bbn"></svg>');
-        jsbayesviz.draw({
-            id: dom.window.document.querySelector('#bbn'),
-            width: 800,
-            height: 800,
-            graph: graph,
-            samples: 15000
+            res.send(dom.window.document.querySelector("body").innerHTML);
+        }, (error) => {
+            res.send(error);
         });
+    });
 
-        res.send(dom.window.document.getElementById("bbn").innerHTML);
+    app.get('/api/dynamic-graph/:id', (req, res) => {
+        if(clockList[req.params.id]) {
+            let network = activeNetworkList[req.params.id];
+            let graph = jsbayesviz.fromGraph(network.graph);
+            let dom = new JSDOM('<svg id="bbn"></svg>');
+
+            jsbayesviz.draw({
+                id: dom.window.document.querySelector('#bbn'),
+                width: 800,
+                height: 800,
+                graph: graph,
+                samples: 15000
+            });
+
+            res.send(dom.window.document.querySelector("body").innerHTML);
+        } else {
+            res.send('no processes running for this network');
+        }
     });
 
     function getNetworkFromId(id){
         return new Promise((resolve, reject) => {
             let filePath = './public/network_' + id + '.json';
-            fs.readFile(filePath, (err, data) => {
-                if (err) {
-                    reject(err);
+            fs.readFile(filePath, (error, data) => {
+                if (error) {
+                    reject(error);
                 } else {
                     resolve(JSON.parse(data));
                 }
             });
         });
     }
+
 };

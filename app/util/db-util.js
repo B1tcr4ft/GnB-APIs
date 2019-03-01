@@ -4,19 +4,23 @@ const request = require('request');
 var exports = module.exports = {};
 
 /**
- * TODO promise
  * Insert data in a specific database
  * @param httpUrl {string} url of the database
  * @param queryParams {string} query parameters
  * @param data {string} query data
- * @returns TODO documentation
+ * @returns {string} status code
  */
-function writeOnDb(httpUrl, queryParams, data){
-    request
-        .post(`${httpUrl}${queryParams}`, {form:data})
-        .on('response', (res) => {
-            return res.statusCode;
-        });
+function writeOnDb(httpUrl, queryParams, data) {
+    return new Promise((resolve, reject) => {
+        request
+            .post(`${httpUrl}${queryParams}`, {form:data})
+            .on('error', error => {
+                reject(error);
+            })
+            .on('response', response => {
+                resolve(response.statusCode);
+            });
+    });
 }
 
 /**
@@ -29,12 +33,11 @@ function readFromDb(httpUrl, queryParams) {
     return new Promise((resolve, reject) => {
         request
             .get(`${httpUrl}${queryParams}`)
-            .on('error', function(err) {
-                reject(err);
+            .on('error', error => {
+                reject(error);
             })
-            .on('data', function(data) {
-                let parsedData = JSON.parse(data).results[0].series[0].values;
-                resolve(parsedData);
+            .on('data', data => {
+                resolve(JSON.parse(data).results[0].series[0].values);
             });
     });
 }
