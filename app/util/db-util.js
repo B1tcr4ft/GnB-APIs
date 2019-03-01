@@ -4,10 +4,12 @@ const request = require('request');
 var exports = module.exports = {};
 
 /**
+ * TODO promise
  * Insert data in a specific database
  * @param httpUrl {string} url of the database
  * @param queryParams {string} query parameters
  * @param data {string} query data
+ * @returns TODO documentation
  */
 function writeOnDb(httpUrl, queryParams, data){
     request

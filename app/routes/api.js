@@ -6,8 +6,8 @@ const fs = require('fs');
 const uid = require('uid-safe');
 const jsbayesviz = require('jsbayes-viz');
 
-let clockListID = [];
-let activeNetworksList = [];
+let clockList = [];
+let activeNetworkList = [];
 
 module.exports = function(app) {
 
@@ -65,7 +65,7 @@ module.exports = function(app) {
     });
 
     app.get('/api/start/:id', (req, res) => {
-        if(clockListID[req.params.id]) {
+        if(clockList[req.params.id]) {
             res.send('process already started for this network');
         } else {
             let filePath = `./public/network_${req.params.id}.json`;
@@ -74,8 +74,9 @@ module.exports = function(app) {
                     res.send('file not found');
                 } else {
                     let network = Network.fromJSON(JSON.parse(data));
-                    activeNetworksList[network.id] = network;
-                    clockListID[req.params.id] = setInterval(function () {
+
+                    activeNetworkList[network.id] = network;
+                    clockList[req.params.id] = setInterval(function () {
                         updateNetwork(network);
                     }, network.refreshTime);
 
@@ -86,10 +87,12 @@ module.exports = function(app) {
     });
 
     app.get('/api/stop/:id', (req, res) => {
-        if(clockListID[req.params.id]) {
-            clearInterval(clockListID[req.params.id]);
-            clockListID.splice(req.params.id, 1);
-            activeNetworksList.splice(req.params.id, 1);
+        if(clockList[req.params.id]) {
+            clearInterval(clockList[req.params.id]);
+
+            clockList.splice(req.params.id, 1);
+            activeNetworkList.splice(req.params.id, 1);
+
             res.send('ok');
         } else {
             res.send('no processes running for this network');
@@ -164,7 +167,7 @@ module.exports = function(app) {
 
     //TODO check if network has started
     app.get('/api/dynamic-graph/:id', (req, res) => {
-        let network = activeNetworksList[req.params.id];
+        let network = activeNetworkList[req.params.id];
 
         let graph = jsbayesviz.fromGraph(network.graph);
 

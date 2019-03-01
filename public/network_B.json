@@ -1,11 +1,11 @@
 {
-	"id": "A",
-	"name": "Rete Bayesiana A",
+	"id": "B",
+	"name": "Rete Bayesiana B",
 	
-	"databaseWriteName": "telegraf",
+	"databaseWriteName": "mydb",
     "databaseWriteUrl" : "http://68.183.74.78:8086",
-    "databaseWriteUser" : "",
-    "databaseWritePassword" : "",
+    "databaseWriteUser" : "admin",
+    "databaseWritePassword" : "B1tcraftswe",
 	"refreshTime": 5000, 
 	
 	"nodes": [
@@ -26,11 +26,11 @@
 
 			"sensor": {
 				"databaseSensorUrl": "http://68.183.74.78:8086",
-				"databaseSensorUser": "",
-				"databaseSensorPassword": "",
+				"databaseSensorUser": "admin",
+				"databaseSensorPassword": "B1tcraftswe",
 				"databaseSensorName": "telegraf",
 				"databaseSensorTable": "cpu",
-				"databaseSensorColumn": "usage_guest"
+				"databaseSensorColumn": "usage_idle"
 			}
 		},
 
@@ -49,8 +49,8 @@
 			
 			"sensor": {
                 "databaseSensorUrl": "http://68.183.74.78:8086",
-                "databaseSensorUser": "",
-                "databaseSensorPassword": "",
+                "databaseSensorUser": "admin",
+                "databaseSensorPassword": "B1tcraftswe",
                 "databaseSensorName": "telegraf",
                 "databaseSensorTable": "disk",
                 "databaseSensorColumn": "used"

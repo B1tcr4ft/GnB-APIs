@@ -8,39 +8,49 @@ var exports = module.exports = {};
  * @param network {Network} the network to update
  */
 function updateNetwork(network) {
-    //update node states
-    network.nodes.forEach(node => {
-        if(node.hasSensor()) {
-            getSensorValue(node.sensor).then((data, err) => {
-                if(err) {
-                    console.log(err);
-                } else {
-                    let state = node.getState(data);
-                    network.graph.observe(node.id, state);
+    new Promise((resolve) => {
+        //update node states
+        network.nodes.forEach(node => {
+            if(node.hasSensor()) {
+                getSensorValue(node.sensor).then((data, err) => {
+                    if(err) {
+                        console.log(err);
+                    } else {
+                        let state = node.getState(data);
+                        network.graph.observe(node.id, state);
+                    }
+                });
+            }
+        });
+
+        resolve(true);
+    }).then((data) => {
+        if(data) {
+            network.graph.sample(20000);
+
+            //query node states
+            let dataToWrite = {};
+            dataToWrite.nodes = [];
+            network.nodes.forEach(node => {
+                let objNode = {};
+                objNode.id = node.id;
+                objNode.states = [];
+
+                for (let i= 0; i<node.states.length; i++){
+                    let state = {};
+                    state.name = node.states[i].name;
+                    state.value = network.graph.node(node.id).probs()[i];
+                    objNode.states.push(state);
                 }
+
+                dataToWrite.nodes.push(objNode);
             });
+
+            writeNetworkStates(network, JSON.parse(JSON.stringify(dataToWrite))); //TODO check this
+        } else {
+            console.log("ERROR"); //TODO betterfy
         }
     });
-    network.graph.sample(20000);
-
-    //query node states
-    let dataToWrite = {};
-    dataToWrite.nodes = [];
-    network.nodes.forEach(node => {
-        let objNode = {};
-        objNode.id = node.id;
-        objNode.states = [];
-
-        for (let i= 0; i<node.states.length; i++){
-            let state = {};
-            state.name = node.states[i].name;
-            state.value = network.graph.node(node.id).probs()[i];
-            objNode.states.push(state);
-        }
-
-        dataToWrite.nodes.push(objNode);
-    });
-    writeNetworkStates(network, JSON.parse(JSON.stringify(dataToWrite))); //TODO check this
 }
 
 /**
@@ -52,7 +62,7 @@ function updateNetwork(network) {
 function getSensorValue(sensor) {
     return new Promise((resolve, reject) => {
         let httpUrl = sensor.DBSensorUrl;
-        let queryParams = `/query?db=${sensor.DBSensorName}&q=SELECT ${sensor.DBSensorColumn} FROM ${sensor.DBSensorTable} ORDER BY time DESC LIMIT 1`;
+        let queryParams = `/query?u=${sensor.DBSensorUser}&p=${sensor.DBSensorPassword}&db=${sensor.DBSensorName}&q=SELECT ${sensor.DBSensorColumn} FROM ${sensor.DBSensorTable} ORDER BY time DESC LIMIT 1`;
 
         readFromDb(httpUrl, queryParams).then((data, err) => {
             if(err) {
@@ -75,16 +85,16 @@ function writeNetworkStates(network, updatedValues) {
     let httpUrl = network.DBWriteUrl;
 
     //compose queryParams
-    let queryParams = `/write/db=${network.DBWriteName}&precision=s`;
+    let queryParams = `/write?u=${network.DBWriteUser}&p=${network.DBWritePassword}&db=${network.DBWriteName}&precision=s`;
 
     //scan updatedValues and compose dataToSend
     let dataToSend = "";
     updatedValues.nodes.forEach(node => {
         node.states.forEach(state => {
-            dataToSend += `${network.id},${node.id}_${state.name}=${state.value}\n`;
+            dataToSend += `${network.id} ${node.id}_${state.name.replace(' ', '\\ ')}=${state.value}\n`;
         })
     });
-    console.log(dataToSend); //TODO remove this
+
     //call to writeOnDb
     writeOnDb(httpUrl, queryParams, dataToSend);
 }
