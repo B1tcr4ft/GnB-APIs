@@ -102,6 +102,12 @@ module.exports = function(app) {
         res.send(statusCode);
     });
 
+    app.post('/api/read-from-db', (req, res) => {
+        const statusCode = readFromDb(req.body.httpUrl, req.body.queryParams);
+        res.send(statusCode);
+    });
+
+    //TODO check if it's needed
     app.post('/api/config', (req, res) => {
         let data = JSON.stringify(req.body);
         let filePath = `./public/config.json`;
@@ -112,11 +118,6 @@ module.exports = function(app) {
                 res.send('configuration for databases updated');
             }
         })
-    });
-
-    app.post('/api/read-from-db', (req, res) => {
-        const statusCode = readFromDb(req.body.httpUrl, req.body.queryParams);
-        res.send(statusCode);
     });
 
     app.post('/api/save/', (req, res) => {
@@ -137,6 +138,7 @@ module.exports = function(app) {
         });
     });
 
+    //TODO check if network has started
     app.get('/api/static-graph/:id', (req, res) => {
         getNetworkFromId(req.params.id).then((data, err) => {
             if(err) {
@@ -160,6 +162,7 @@ module.exports = function(app) {
         });
     });
 
+    //TODO check if network has started
     app.get('/api/dynamic-graph/:id', (req, res) => {
         let network = activeNetworksList[req.params.id];
 
