@@ -3,7 +3,7 @@ const { sendSlackMessage } = require('../util/slack-util');
 
 module.exports = app => {
 
-    app.post('/api', (req, res) => {
+    app.post('/update/api', (req, res) => {
         sendSlackMessage('*API services restarting...*', 'API services restarting...', '#ffb347');
 
         exec('cd /home/gnb-backend && git pull', (error) => {
@@ -30,7 +30,7 @@ module.exports = app => {
         res.send('updated');
     });
 
-    app.post('/grafana', (req, res) => {
+    app.post('/update/grafana', (req, res) => {
         let oldTime = (new Date()).getTime();
         sendSlackMessage('*Grafana plugin updating...*', 'Grafana plugin updating...', '#ffb347');
 
