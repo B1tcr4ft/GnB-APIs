@@ -18,13 +18,15 @@ module.exports = app => {
     app.get('/api/delete/:id', (req, res) => {
         let filePath = `./public/network_${req.params.id}.json`;
         if (!fs.existsSync(filePath)) {
-            res.send('network with this id does not exist');
+            res.status(500);
+            res.send('There are no networks with this ID.');
         } else {
             fs.unlink(filePath, error => {
                 if (error) {
-                    res.send(error);
+                    res.status(500);
+                    res.send('Error while deleting the network. Please try again later.');
                 } else {
-                    res.send('bayesian network has been deleted!');
+                    res.send('The network has been deleted!');
                 }
             })
         }
@@ -35,7 +37,8 @@ module.exports = app => {
         let list = [];
         fs.readdir(dirPath, (error, files) => {
             if (error) {
-                req.send(error);
+                res.status(500);
+                req.send('Error while retrieving the network list. Please try again later.');
             } else {
                 files.forEach(file => {
                     if (file !== '.gitkeep') {
@@ -44,6 +47,7 @@ module.exports = app => {
                         let bayesianObject = {};
                         bayesianObject.id = data.id;
                         bayesianObject.name = data.name;
+                        bayesianObject.active = activeNetworkList[data.id] !== null;
                         list.push(bayesianObject);
                     }
                 });
@@ -55,8 +59,9 @@ module.exports = app => {
     app.get('/api/retrieve/:id', (req, res) => {
         getNetworkFromId(req.params.id).then(data => {
             res.send(data);
-        }, error => {
-            res.send(error);
+        }, () => {
+            res.status(500);
+            res.send('There are no networks with this ID.');
         });
     });
 
@@ -68,7 +73,8 @@ module.exports = app => {
             let filePath = `./public/network_${req.params.id}.json`;
             fs.readFile(filePath, (error, data) => {
                 if (error) {
-                    res.send(error);
+                    res.status(500);
+                    res.send('There are no networks with this ID.');
                 } else {
                     let network = Network.fromJSON(JSON.parse(data));
 
@@ -77,7 +83,7 @@ module.exports = app => {
                         updateNetwork(network);
                     }, network.refreshTime);
 
-                    res.send('Network has been started!');
+                    res.send('The network has been started!');
                 }
             });
         }
@@ -90,25 +96,28 @@ module.exports = app => {
             clockList = clockList.filter(val => val !== req.params.id);
             activeNetworkList = activeNetworkList.filter(val => val !== req.params.id);
 
-            res.send('network has been stopped');
+            res.send('The network has been stopped!');
         } else {
-            res.send('no processes running for this network');
+            res.status(500);
+            res.send('No processes running for this network.');
         }
     });
 
     app.post('/api/write-on-db/', (req, res) => {
         writeOnDb(req.body.httpUrl, req.body.queryParams, req.body.dataToSend).then(data => {
             res.send(data);
-        }, error => {
-            res.send(error);
+        }, () => {
+            res.status(500);
+            res.send('Error while writing on the database. Please try again later.');
         });
     });
 
     app.post('/api/read-from-db', (req, res) => {
         readFromDb(req.body.httpUrl, req.body.queryParams).then(data => {
             res.send(data);
-        }, error => {
-            res.send(error);
+        }, () => {
+            res.status(500);
+            res.send('Error while reading from the database. Please try again later.');
         });
     });
 
@@ -116,7 +125,8 @@ module.exports = app => {
         //generate uid
         uid(5, (error, id) => {
             if (error) {
-                res.send(error);
+                res.status(500);
+                res.send('Error while saving the network. Please try again later.');
             } else {
                 //insert (or override if already exists) uid in network json definition
                 req.body.id = id;
@@ -126,9 +136,10 @@ module.exports = app => {
                 let filePath = `./public/network_${id}.json`;
                 fs.writeFile(filePath, data, (error => {
                     if (error) {
-                        res.send(error);
+                        res.status(500);
+                        res.send('Error while saving the network. Please try again later.');
                     } else {
-                        res.send('bayesian network has been saved');
+                        res.send('The network has been saved!');
                     }
                 }));
             }
@@ -151,8 +162,9 @@ module.exports = app => {
             });
 
             res.send(dom.window.document.querySelector("body").innerHTML);
-        }, (error) => {
-            res.send(error);
+        }, () => {
+            res.status(500);
+            res.send('There are no networks with this ID.');
         });
     });
 
@@ -172,7 +184,8 @@ module.exports = app => {
 
             res.send(dom.window.document.querySelector("body").innerHTML);
         } else {
-            res.send('no processes running for this network');
+            res.status(500);
+            res.send('No processes running for this network.');
         }
     });
 
