@@ -47,7 +47,7 @@ module.exports = app => {
                         let bayesianObject = {};
                         bayesianObject.id = data.id;
                         bayesianObject.name = data.name;
-                        bayesianObject.active = activeNetworkList[data.id] !== null;
+                        bayesianObject.active = activeNetworkList[data.id] !== undefined;
                         list.push(bayesianObject);
                     }
                 });
