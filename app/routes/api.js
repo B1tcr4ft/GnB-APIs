@@ -15,23 +15,6 @@ module.exports = app => {
         res.send('<h1>Benvenuti nella API di bitcraft</h1>');
     });
 
-    app.get('/api/delete/:id', (req, res) => {
-        let filePath = `./public/network_${req.params.id}.json`;
-        if (!fs.existsSync(filePath)) {
-            res.status(500);
-            res.send('There are no networks with this ID.');
-        } else {
-            fs.unlink(filePath, error => {
-                if (error) {
-                    res.status(500);
-                    res.send('Error while deleting the network. Please try again later.');
-                } else {
-                    res.send('The network has been deleted!');
-                }
-            })
-        }
-    });
-
     app.get('/api/retrieve/all', (req, res) => {
         let dirPath = "./public/";
         let list = [];
@@ -144,6 +127,28 @@ module.exports = app => {
                 }));
             }
         });
+    });
+
+    app.get('/api/delete/:id', (req, res) => {
+        if(activeNetworkList[res.params.id]) {
+            res.status(500);
+            res.send('The network is currently active. Please stop it before deleting.');
+        } else {
+            let filePath = `./public/network_${req.params.id}.json`;
+            if (!fs.existsSync(filePath)) {
+                res.status(500);
+                res.send('There are no networks with this ID.');
+            } else {
+                fs.unlink(filePath, error => {
+                    if (error) {
+                        res.status(500);
+                        res.send('Error while deleting the network. Please try again later.');
+                    } else {
+                        res.send('The network has been deleted!');
+                    }
+                })
+            }
+        }
     });
 
     app.get('/api/static-graph/:id', (req, res) => {
