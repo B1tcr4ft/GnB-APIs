@@ -62,7 +62,7 @@ module.exports = app => {
 
     app.get('/api/start/:id', (req, res) => {
         if (clockList[req.params.id]) {
-            res.send('process already started for this network');
+            res.error('Process already started for this network.');
         } else {
             let filePath = `./public/network_${req.params.id}.json`;
             fs.readFile(filePath, (error, data) => {
@@ -76,7 +76,7 @@ module.exports = app => {
                         updateNetwork(network);
                     }, network.refreshTime);
 
-                    res.send('network has been started');
+                    res.send('Network has been started!');
                 }
             });
         }
