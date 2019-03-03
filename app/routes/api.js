@@ -62,7 +62,8 @@ module.exports = app => {
 
     app.get('/api/start/:id', (req, res) => {
         if (clockList[req.params.id]) {
-            throw 'Process already started for this network.';
+            res.status(500);
+            res.send('Process already started for this network.');
         } else {
             let filePath = `./public/network_${req.params.id}.json`;
             fs.readFile(filePath, (error, data) => {
