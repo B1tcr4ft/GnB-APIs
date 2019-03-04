@@ -107,24 +107,22 @@ module.exports = app => {
     app.post('/api/save', (req, res) => {
         //generate uid
         uid(5, (error, id) => {
-            if (error) {
-                res.status(500);
-                res.send('Error while saving the network. Please try again later.');
-            } else {
+            if ( isValid(res, error, 'Error while saving the network. Please try again later.') ) {
                 //insert (or override if already exists) uid in network json definition
                 req.body.id = id;
                 let data = JSON.stringify(req.body);
 
                 //save network with filename in this form: network_uid.json
                 let filePath = `./public/network_${id}.json`;
-                fs.writeFile(filePath, data, (error => {
-                    if (error) {
-                        res.status(500);
-                        res.send('Error while saving the network. Please try again later.');
-                    } else {
-                        res.send('The network has been saved!');
+                fs.writeFile(filePath, data, error => {
+                    if ( isValid(res, error, 'Error while saving the network. Please try again later.') ) {
+                        fs.chmod(filePath, 777, error => {
+                            if ( isValid(res, error, 'Error while saving the network. Please try again later.') ) {
+                                res.send('The network has been saved!');
+                            }
+                        });
                     }
-                }));
+                });
             }
         });
     });
@@ -228,6 +226,17 @@ module.exports = app => {
                 }
             });
         });
+    }
+
+    function isValid(res, error, errorMessage) {
+        if(error) {
+            res.status(500);
+            res.send(errorMessage);
+
+            return false;
+        }
+
+        return true;
     }
 
 };
