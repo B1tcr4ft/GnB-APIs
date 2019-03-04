@@ -116,11 +116,7 @@ module.exports = app => {
                 let filePath = `./public/network_${id}.json`;
                 fs.writeFile(filePath, data, error => {
                     if ( isValid(res, error, 'Error while saving the network. Please try again later.') ) {
-                        fs.chmod(filePath, 777, error => {
-                            if ( isValid(res, error, 'Error while saving the network. Please try again later.') ) {
-                                res.send('The network has been saved!');
-                            }
-                        });
+                        res.send('The network has been saved!');
                     }
                 });
             }
