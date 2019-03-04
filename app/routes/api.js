@@ -19,10 +19,7 @@ module.exports = app => {
         let dirPath = "./public/";
         let list = [];
         fs.readdir(dirPath, (error, files) => {
-            if (error) {
-                res.status(500);
-                req.send('Error while retrieving the network list. Please try again later.');
-            } else {
+            if ( isValid(res, error, 'Error while retrieving the network list. Please try again later.') ) {
                 files.forEach(file => {
                     if (file !== '.gitkeep') {
                         let contents = fs.readFileSync(dirPath + file, 'utf8');
@@ -43,22 +40,17 @@ module.exports = app => {
         getNetworkFromId(req.params.id).then(data => {
             res.send(data);
         }, () => {
-            res.status(500);
-            res.send('There are no networks with this ID.');
+            sendError(res, 'There are no networks with this ID.');
         });
     });
 
     app.get('/api/start/:id', (req, res) => {
         if (clockList[req.params.id]) {
-            res.status(500);
-            res.send('Process already started for this network.');
+            sendError(res, 'Process already started for this network.');
         } else {
             let filePath = `./public/network_${req.params.id}.json`;
             fs.readFile(filePath, (error, data) => {
-                if (error) {
-                    res.status(500);
-                    res.send('There are no networks with this ID.');
-                } else {
+                if ( isValid(res, error, 'There are no networks with this ID.') ) {
                     let network = Network.fromJSON(JSON.parse(data));
 
                     activeNetworkList[network.id] = network;
@@ -81,8 +73,7 @@ module.exports = app => {
 
             res.send('The network has been stopped!');
         } else {
-            res.status(500);
-            res.send('No processes running for this network.');
+            sendError(res, 'No processes running for this network.');
         }
     });
 
@@ -90,8 +81,7 @@ module.exports = app => {
         writeOnDb(req.body.httpUrl, req.body.queryParams, req.body.dataToSend).then(data => {
             res.send(data);
         }, () => {
-            res.status(500);
-            res.send('Error while writing on the database. Please try again later.');
+            sendError(res, 'Error while writing on the database. Please try again later.');
         });
     });
 
@@ -99,8 +89,7 @@ module.exports = app => {
         readFromDb(req.body.httpUrl, req.body.queryParams).then(data => {
             res.send(data);
         }, () => {
-            res.status(500);
-            res.send('Error while reading from the database. Please try again later.');
+            sendError(res, 'Error while reading from the database. Please try again later.');
         });
     });
 
@@ -125,19 +114,14 @@ module.exports = app => {
 
     app.get('/api/delete/:id', (req, res) => {
         if(activeNetworkList[req.params.id]) {
-            res.status(500);
-            res.send('The network is currently active. Please stop it before deleting.');
+            sendError(res, 'The network is currently active. Please stop it before deleting.');
         } else {
             let filePath = `./public/network_${req.params.id}.json`;
             if (!fs.existsSync(filePath)) {
-                res.status(500);
-                res.send('There are no networks with this ID.');
+                sendError(res, 'There are no networks with this ID.');
             } else {
                 fs.unlink(filePath, error => {
-                    if (error) {
-                        res.status(500);
-                        res.send('Error while deleting the network. Please try again later.');
-                    } else {
+                    if ( isValid(res, error, 'Error while deleting the network. Please try again later.') ) {
                         res.send('The network has been deleted!');
                     }
                 })
@@ -147,20 +131,15 @@ module.exports = app => {
 
     app.post('/api/update/:id', (req, res) => {
         if(activeNetworkList[req.params.id]) {
-            res.status(500);
-            res.send('The network is currently active. Please stop it before updating.');
+            sendError(res, 'The network is currently active. Please stop it before updating.');
         } else {
             let filePath = `./public/network_${req.params.id}.json`;
             if (!fs.existsSync(filePath)) {
-                res.status(500);
-                res.send('There are no networks with this ID.');
+                sendError(res, 'There are no networks with this ID.');
             } else {
                 let data = JSON.stringify(req.body);
                 fs.writeFile(filePath, data, (error => {
-                    if (error) {
-                        res.status(500);
-                        res.send('Error while updating the network. Please try again later.');
-                    } else {
+                    if ( isValid(res, error, 'Error while updating the network. Please try again later.') ) {
                         res.send('The network has been updated!');
                     }
                 }));
@@ -185,8 +164,7 @@ module.exports = app => {
 
             res.send(dom.window.document.querySelector("body").innerHTML);
         }, () => {
-            res.status(500);
-            res.send('There are no networks with this ID.');
+            sendError(res, 'There are no networks with this ID.');
         });
     });
 
@@ -206,8 +184,7 @@ module.exports = app => {
 
             res.send(dom.window.document.querySelector("body").innerHTML);
         } else {
-            res.status(500);
-            res.send('No processes running for this network.');
+            sendError(res, 'No processes running for this network.');
         }
     });
 
@@ -226,13 +203,16 @@ module.exports = app => {
 
     function isValid(res, error, errorMessage) {
         if(error) {
-            res.status(500);
-            res.send(errorMessage);
-
+            sendError(res, errorMessage);
             return false;
         }
 
         return true;
+    }
+
+    function sendError(res, errorMessage) {
+        res.status(500);
+        res.send(errorMessage);
     }
 
 };
