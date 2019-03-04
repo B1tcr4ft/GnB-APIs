@@ -1,0 +1,79 @@
+{
+	"id": "A",
+	"name": "Rete Bayesiana A",
+	
+	"databaseWriteName": "Influx2",										//The database name (as it is called on Grafana's database list) where the nodes' probabilities will be registered
+	"databaseWriteUrl" : "",											//The database url
+	"databaseWriteUser" : "",											//The database user
+	"databaseWritePassword" : "",										//The database password
+	"refreshTime": 5000,												//The interval time (in milliseconds) between the node updates
+	
+	"nodes": [
+		{
+			"id": "A",
+			"name": "Node A",
+			"parents": ["B"],											//Node with id "B" is a parent node
+			
+			"states": [													//State names and triggers
+				{"name": "State 0", "trigger": "%v>=90"},				//Incremental ID -> A=0
+				{"name": "State 1", "trigger": "40<%v<90"},				//Incremental ID -> A=1
+				{"name": "State 2", "trigger": "%v<=40"}				//Incremental ID -> A=2
+			],
+			"cpt": [													//Conditional Probability Table
+				[0.4, 0.1, 0.5], 										//[ P(A=0|B=0), P(A=1|B=0), P(A=2|B=0) ]
+				[0.2, 0.2, 0.6] 										//[ P(A=0|B=1), P(A=1|B=1), P(A=2|B=1) ]
+			],
+			
+			"sensor": {
+				"databaseSensorName": "Influx1",						//The database name (as it is called on Grafana's database list) where the sensor is being tracked
+				"databaseSensorUrl": "https://influx.bitcraftswe.it",	//The database url
+				"databaseSensorUser": "admin",							//The database user
+				"databaseSensorPassword": "B1tcraftswe",				//The database password
+				"databaseSensorTable": "Server1",						//The table name where the sensor is being tracked
+				"databaseSensorColumn": "CPU"							//The column name where the sensor is being tracked
+			}
+		},
+		
+		{
+			"id": "B",
+			"name": "Node B",
+			"parents": [],												//Empty means there are no parents
+			
+			"states": [
+				{"name": "State 0", "trigger": "%v>=50"},				//Incremental ID -> B=0
+				{"name": "State 1", "trigger": "%v<50"}					//Incremental ID -> B=1
+			],
+			"cpt": [													//Conditional Probability Table
+				[0.6, 0.4]												//[ P(B=0), P(B=1) ]
+			],
+			
+			"sensor": {}												//Empty means no sensors are being attached
+		},
+		
+		{
+			"id": "C",
+			"name": "Node C",
+			"parents": ["A", "B"],										//Nodes with id "A" and "B" are parent nodes
+			
+			"states": [													//State names and triggers
+				{"name": "State 0", "trigger": "%v>=50"},				//Incremental ID -> C=0
+				{"name": "State 1", "trigger": "0<=%v<50"}				//Incremental ID -> C=1
+			],
+			"cpt": [													//Conditional Probability Table
+					//[ P(A=0) ]
+					[0.4, 0.6],											//[ P(C=0|A=0,B=0), P(C=1|A=0,B=0) ]
+					[0.2, 0.8],											//[ P(C=0|A=0,B=1), P(C=1|A=0,B=1) ]
+
+					//[ P(A=1) ]
+					[0.3, 0.7],											//[ P(C=0|A=1,B=0), P(C=1|A=1,B=0) ]
+					[0.4, 0.6],											//[ P(C=0|A=1,B=1), P(C=1|A=1,B=1) ]
+
+					//[ P(A=2) ]
+					[0.1, 0.9],											//[ P(C=0|A=2,B=0), P(C=1|A=2,B=0) ]
+					[0.7, 0.3]											//[ P(C=0|A=2,B=1), P(C=1|A=2,B=1) ]
+			],
+			
+			"sensor": {}												//Empty means no sensors are being attached
+		}
+	]
+}
