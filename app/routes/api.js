@@ -161,6 +161,7 @@ module.exports = app => {
                 res.status(500);
                 res.send('There are no networks with this ID.');
             } else {
+                let data = JSON.stringify(req.body);
                 fs.writeFile(filePath, data, (error => {
                     if (error) {
                         res.status(500);
