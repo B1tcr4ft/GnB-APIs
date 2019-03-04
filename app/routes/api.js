@@ -19,7 +19,7 @@ module.exports = app => {
         let dirPath = "./public/";
         let list = [];
         fs.readdir(dirPath, (error, files) => {
-            if ( isValid(res, error, 'Error while retrieving the network list. Please try again later.') ) {
+            if (isValid(res, error, 'Error while retrieving the network list. Please try again later.')) {
                 files.forEach(file => {
                     if (file !== '.gitkeep') {
                         let contents = fs.readFileSync(dirPath + file, 'utf8');
@@ -50,7 +50,7 @@ module.exports = app => {
         } else {
             let filePath = `./public/network_${req.params.id}.json`;
             fs.readFile(filePath, (error, data) => {
-                if ( isValid(res, error, 'There are no networks with this ID.') ) {
+                if (isValid(res, error, 'There are no networks with this ID.')) {
                     let network = Network.fromJSON(JSON.parse(data));
 
                     activeNetworkList[network.id] = network;
@@ -96,7 +96,7 @@ module.exports = app => {
     app.post('/api/save', (req, res) => {
         //generate uid
         uid(5, (error, id) => {
-            if ( isValid(res, error, 'Error while saving the network. Please try again later.') ) {
+            if (isValid(res, error, 'Error while saving the network. Please try again later.')) {
                 //insert (or override if already exists) uid in network json definition
                 req.body.id = id;
                 let data = JSON.stringify(req.body);
@@ -104,7 +104,7 @@ module.exports = app => {
                 //save network with filename in this form: network_uid.json
                 let filePath = `./public/network_${id}.json`;
                 fs.writeFile(filePath, data, error => {
-                    if ( isValid(res, error, 'Error while saving the network. Please try again later.') ) {
+                    if (isValid(res, error, 'Error while saving the network. Please try again later.')) {
                         res.send('The network has been saved!');
                     }
                 });
@@ -113,7 +113,7 @@ module.exports = app => {
     });
 
     app.get('/api/delete/:id', (req, res) => {
-        if(activeNetworkList[req.params.id]) {
+        if (activeNetworkList[req.params.id]) {
             sendError(res, 'The network is currently active. Please stop it before deleting.');
         } else {
             let filePath = `./public/network_${req.params.id}.json`;
@@ -121,7 +121,7 @@ module.exports = app => {
                 sendError(res, 'There are no networks with this ID.');
             } else {
                 fs.unlink(filePath, error => {
-                    if ( isValid(res, error, 'Error while deleting the network. Please try again later.') ) {
+                    if (isValid(res, error, 'Error while deleting the network. Please try again later.')) {
                         res.send('The network has been deleted!');
                     }
                 })
@@ -130,7 +130,7 @@ module.exports = app => {
     });
 
     app.post('/api/update/:id', (req, res) => {
-        if(activeNetworkList[req.params.id]) {
+        if (activeNetworkList[req.params.id]) {
             sendError(res, 'The network is currently active. Please stop it before updating.');
         } else {
             let filePath = `./public/network_${req.params.id}.json`;
@@ -139,7 +139,7 @@ module.exports = app => {
             } else {
                 let data = JSON.stringify(req.body);
                 fs.writeFile(filePath, data, (error => {
-                    if ( isValid(res, error, 'Error while updating the network. Please try again later.') ) {
+                    if (isValid(res, error, 'Error while updating the network. Please try again later.')) {
                         res.send('The network has been updated!');
                     }
                 }));
@@ -202,7 +202,7 @@ module.exports = app => {
     }
 
     function isValid(res, error, errorMessage) {
-        if(error) {
+        if (error) {
             sendError(res, errorMessage);
             return false;
         }
