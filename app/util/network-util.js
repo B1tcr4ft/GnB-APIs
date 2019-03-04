@@ -23,27 +23,27 @@ function updateNetwork(network) {
     });
 
     Promise.all(promises).then(() => {
-        network.graph.sample(20000);
+        network.graph.sample(20000).then(() => {
+            //query node states
+            let dataToWrite = {};
+            dataToWrite.nodes = [];
+            network.nodes.forEach(node => {
+                let objNode = {};
+                objNode.id = node.id;
+                objNode.states = [];
 
-        //query node states
-        let dataToWrite = {};
-        dataToWrite.nodes = [];
-        network.nodes.forEach(node => {
-            let objNode = {};
-            objNode.id = node.id;
-            objNode.states = [];
+                for (let i = 0; i < node.states.length; i++) {
+                    let state = {};
+                    state.name = node.states[i].name;
+                    state.value = network.graph.node(node.id).probs()[i];
+                    objNode.states.push(state);
+                }
 
-            for (let i = 0; i < node.states.length; i++) {
-                let state = {};
-                state.name = node.states[i].name;
-                state.value = network.graph.node(node.id).probs()[i];
-                objNode.states.push(state);
-            }
+                dataToWrite.nodes.push(objNode);
+            });
 
-            dataToWrite.nodes.push(objNode);
+            writeNetworkStates(network, JSON.parse(JSON.stringify(dataToWrite)));
         });
-
-        writeNetworkStates(network, JSON.parse(JSON.stringify(dataToWrite)));
     }, () => {
         //TODO handle error state
     });
