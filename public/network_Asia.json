@@ -1,0 +1,249 @@
+{
+  "id": "Asia",
+  "name": "Asia",
+  "databaseWriteName": "mydb",
+  "databaseWriteUrl": "https://influx.bitcraftswe.it",
+  "databaseWriteUser": "admin",
+  "databaseWritePassword": "B1tcraftswe",
+  "refreshTime": 1000,
+  "nodes": [
+    {
+      "id": "visitAsia",
+      "name": "Visit Asia",
+      "parents": [
+        
+      ],
+      "states": [
+        {
+          "name": "Visit",
+          "trigger": "%v>=80"
+        },
+        {
+          "name": "No visit",
+          "trigger": "%v<80"
+        }
+      ],
+      "cpt": [
+        [0.01,0.99]
+      ],
+      "sensor": {
+        "databaseSensorUrl": "https://influx.bitcraftswe.it",
+        "databaseSensorUser": "admin",
+        "databaseSensorPassword": "B1tcraftswe",
+        "databaseSensorName": "telegraf",
+        "databaseSensorTable": "cpu",
+        "databaseSensorColumn": "usage_idle"
+      }
+    },
+    {
+      "id": "Smoking",
+      "name": "Smoking",
+      "parents": [
+        
+      ],
+      "states": [
+        {
+          "name": "Smoke",
+          "trigger": "%v>=60"
+        },
+        {
+          "name": "Non smoke",
+          "trigger": "%v<60"
+        }
+      ],
+      "cpt": [
+        [0.5,0.5]
+      ],
+      "sensor": {
+        "databaseSensorUrl": "https://influx.bitcraftswe.it",
+        "databaseSensorUser": "admin",
+        "databaseSensorPassword": "B1tcraftswe",
+        "databaseSensorName": "telegraf",
+        "databaseSensorTable": "cpu",
+        "databaseSensorColumn": "usage_system"
+      }
+    },
+    {
+      "id": "Tuberculosis",
+      "name": "Tuberculosis",
+      "parents": [
+        "visitAsia"
+      ],
+      "states": [
+        {
+          "name": "Present",
+          "trigger": "%v>=70"
+        },
+        {
+          "name": "absent",
+          "trigger": "%v<70"
+        }
+      ],
+      "cpt": [
+			[0.4, 0.6],
+			[0.2, 0.8]
+		],
+      "sensor": {
+        "databaseSensorUrl": "https://influx.bitcraftswe.it",
+        "databaseSensorUser": "admin",
+        "databaseSensorPassword": "B1tcraftswe",
+        "databaseSensorName": "telegraf",
+        "databaseSensorTable": "cpu",
+        "databaseSensorColumn": "usage_nice"
+      }
+    },
+    {
+      "id": "Cancer",
+      "name": "Cancer",
+      "parents": [
+        "Smoking"
+      ],
+      "states": [
+        {
+          "name": "Present",
+          "trigger": "%v>=70"
+        },
+        {
+          "name": "absent",
+          "trigger": "%v<70"
+        }
+      ],
+      "cpt": [
+			[0.4, 0.6],
+			[0.2, 0.8]
+		],
+      "sensor": {
+        "databaseSensorUrl": "https://influx.bitcraftswe.it",
+        "databaseSensorUser": "admin",
+        "databaseSensorPassword": "B1tcraftswe",
+        "databaseSensorName": "telegraf",
+        "databaseSensorTable": "cpu",
+        "databaseSensorColumn": "usage_iowait"
+      }
+    },
+    {
+      "id": "TbOrCa",
+      "name": "Tuber or canc",
+      "parents": [
+        "Cancer",
+        "Tuberculosis"
+      ],
+      "states": [
+        {
+          "name": "True",
+          "trigger": "%v>=70"
+        },
+        {
+          "name": "False",
+          "trigger": "%v<70"
+        }
+      ],
+      "cpt": [
+			[0.4, 0.6],
+			[0.2, 0.8],
+
+			[0.3, 0.7],
+			[0.4, 0.6]
+		],
+      "sensor": {
+        "databaseSensorUrl": "https://influx.bitcraftswe.it",
+        "databaseSensorUser": "admin",
+        "databaseSensorPassword": "B1tcraftswe",
+        "databaseSensorName": "telegraf",
+        "databaseSensorTable": "cpu",
+        "databaseSensorColumn": "usage_steal"
+      }
+    },
+    {
+      "id": "Bronchitis",
+      "name": "Bronchitis",
+      "parents": [
+        "Smoking"
+      ],
+      "states": [
+        {
+          "name": "present",
+          "trigger": "%v>=70"
+        },
+        {
+          "name": "absent",
+          "trigger": "%v<70"
+        }
+      ],
+      "cpt": [
+			[0.4, 0.6],
+			[0.2, 0.8]
+		],
+      "sensor": {
+        "databaseSensorUrl": "https://influx.bitcraftswe.it",
+        "databaseSensorUser": "admin",
+        "databaseSensorPassword": "B1tcraftswe",
+        "databaseSensorName": "telegraf",
+        "databaseSensorTable": "cpu",
+        "databaseSensorColumn": "usage_irq"
+      }
+    },
+    {
+      "id": "XRay",
+      "name": "XRay",
+      "parents": [
+        "TbOrCa"
+      ],
+      "states": [
+        {
+          "name": "present",
+          "trigger": "%v>=70"
+        },
+        {
+          "name": "absent",
+          "trigger": "%v<70"
+        }
+      ],
+      "cpt": [
+			[0.4, 0.6],
+			[0.2, 0.8]
+		],
+      "sensor": {
+        "databaseSensorUrl": "https://influx.bitcraftswe.it",
+        "databaseSensorUser": "admin",
+        "databaseSensorPassword": "B1tcraftswe",
+        "databaseSensorName": "telegraf",
+        "databaseSensorTable": "cpu",
+        "databaseSensorColumn": "usage_user"
+      }
+    },
+    {
+      "id": "Dyspnea",
+      "name": "Dyspnea",
+      "parents": [
+        "TbOrCa",
+        "Bronchitis"
+      ],
+      "states": [
+        {
+          "name": "present",
+          "trigger": "%v>=70"
+        },
+        {
+          "name": "absent",
+          "trigger": "%v<70"
+        }
+      ],
+      "cpt": [
+			[0.4, 0.6],
+			[0.2, 0.8],
+
+			[0.3, 0.7],
+			[0.4, 0.6]
+		],
+      "sensor": {
+        "databaseSensorUrl": "https://influx.bitcraftswe.it",
+        "databaseSensorUser": "admin",
+        "databaseSensorPassword": "B1tcraftswe",
+        "databaseSensorName": "telegraf",
+        "databaseSensorTable": "cpu",
+        "databaseSensorColumn": "usage_guest"
+      }
+    }
+  ]
+}
