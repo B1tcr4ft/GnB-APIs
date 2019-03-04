@@ -151,6 +151,28 @@ module.exports = app => {
         }
     });
 
+    app.get('/api/update/:id', (req, res) => {
+        if(activeNetworkList[req.params.id]) {
+            res.status(500);
+            res.send('The network is currently active. Please stop it before updating.');
+        } else {
+            let filePath = `./public/network_${req.params.id}.json`;
+            if (!fs.existsSync(filePath)) {
+                res.status(500);
+                res.send('There are no networks with this ID.');
+            } else {
+                fs.writeFile(filePath, data, (error => {
+                    if (error) {
+                        res.status(500);
+                        res.send('Error while updating the network. Please try again later.');
+                    } else {
+                        res.send('The network has been updated!');
+                    }
+                }));
+            }
+        }
+    });
+
     app.get('/api/static-graph/:id', (req, res) => {
         getNetworkFromId(req.params.id).then(data => {
             let network = Network.fromJSON(data);
