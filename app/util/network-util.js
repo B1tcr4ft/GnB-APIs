@@ -80,12 +80,13 @@ function writeNetworkStates(network, updatedValues) {
 
     //compose queryParams
     let queryParams = `/write?u=${network.databaseWriteUser}&p=${network.databaseWritePassword}&db=${network.databaseWriteName}&precision=s`;
+    let measurementName = network.name.replace(' ', '_') + '[' + network.id + ']';
 
     //scan updatedValues and compose dataToSend
     let dataToSend = "";
     updatedValues.nodes.forEach(node => {
         node.states.forEach(state => {
-            dataToSend += `${network.id} ${node.id}_${state.name.replace(' ', '\\ ')}=${state.value}\n`;
+            dataToSend += `${measurementName} ${node.id}_${state.name.replace(' ', '\\ ')}=${state.value}\n`;
         });
     });
 
