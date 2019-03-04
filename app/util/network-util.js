@@ -57,8 +57,8 @@ function updateNetwork(network) {
  */
 function getSensorValue(sensor) {
     return new Promise((resolve, reject) => {
-        let httpUrl = sensor.DBSensorUrl;
-        let queryParams = `/query?u=${sensor.DBSensorUser}&p=${sensor.DBSensorPassword}&db=${sensor.DBSensorName}&q=SELECT ${sensor.DBSensorColumn} FROM ${sensor.DBSensorTable} ORDER BY time DESC LIMIT 1`;
+        let httpUrl = sensor.databaseSensorUrl;
+        let queryParams = `/query?u=${sensor.databaseSensorUser}&p=${sensor.databaseSensorPassword}&db=${sensor.databaseSensorName}&q=SELECT ${sensor.databaseSensorColumn} FROM ${sensor.databaseSensorTable} ORDER BY time DESC LIMIT 1`;
 
         readFromDb(httpUrl, queryParams).then(data => {
             resolve(data[0][1]);
@@ -76,10 +76,10 @@ function getSensorValue(sensor) {
  * */
 function writeNetworkStates(network, updatedValues) {
     //assemble httpUrl
-    let httpUrl = network.DBWriteUrl;
+    let httpUrl = network.databaseWriteUrl;
 
     //compose queryParams
-    let queryParams = `/write?u=${network.DBWriteUser}&p=${network.DBWritePassword}&db=${network.DBWriteName}&precision=s`;
+    let queryParams = `/write?u=${network.databaseWriteUser}&p=${network.databaseWritePassword}&db=${network.databaseWriteName}&precision=s`;
 
     //scan updatedValues and compose dataToSend
     let dataToSend = "";
