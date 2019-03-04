@@ -151,7 +151,7 @@ module.exports = app => {
         }
     });
 
-    app.get('/api/update/:id', (req, res) => {
+    app.post('/api/update/:id', (req, res) => {
         if(activeNetworkList[req.params.id]) {
             res.status(500);
             res.send('The network is currently active. Please stop it before updating.');
