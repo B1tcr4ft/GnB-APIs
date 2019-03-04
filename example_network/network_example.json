@@ -1,9 +1,9 @@
 {
-	"id": "A",
-	"name": "Rete Bayesiana A",
+	"id": "example",
+	"name": "Example Network",
 	
 	"databaseWriteName": "Influx2",										//The database name (as it is called on Grafana's database list) where the nodes' probabilities will be registered
-	"databaseWriteUrl" : "",											//The database url
+	"databaseWriteUrl" : "https://influx.bitcraftswe.it",				//The database url
 	"databaseWriteUser" : "",											//The database user
 	"databaseWritePassword" : "",										//The database password
 	"refreshTime": 5000,												//The interval time (in milliseconds) between the node updates
@@ -27,8 +27,8 @@
 			"sensor": {
 				"databaseSensorName": "Influx1",						//The database name (as it is called on Grafana's database list) where the sensor is being tracked
 				"databaseSensorUrl": "https://influx.bitcraftswe.it",	//The database url
-				"databaseSensorUser": "admin",							//The database user
-				"databaseSensorPassword": "B1tcraftswe",				//The database password
+				"databaseSensorUser": "",								//The database user
+				"databaseSensorPassword": "",							//The database password
 				"databaseSensorTable": "Server1",						//The table name where the sensor is being tracked
 				"databaseSensorColumn": "CPU"							//The column name where the sensor is being tracked
 			}
