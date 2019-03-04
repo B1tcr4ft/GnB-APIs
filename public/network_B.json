@@ -3,7 +3,7 @@
 	"name": "Rete Bayesiana B",
 	
 	"databaseWriteName": "mydb",
-    "databaseWriteUrl" : "http://68.183.74.78:8086",
+    "databaseWriteUrl" : "https://influx.bitcraftswe.it",
     "databaseWriteUser" : "admin",
     "databaseWritePassword" : "B1tcraftswe",
 	"refreshTime": 1000,
@@ -25,7 +25,7 @@
 			],
 
 			"sensor": {
-				"databaseSensorUrl": "http://68.183.74.78:8086",
+				"databaseSensorUrl": "https://influx.bitcraftswe.it",
 				"databaseSensorUser": "admin",
 				"databaseSensorPassword": "B1tcraftswe",
 				"databaseSensorName": "telegraf",
@@ -48,7 +48,7 @@
 			],
 			
 			"sensor": {
-                "databaseSensorUrl": "http://68.183.74.78:8086",
+                "databaseSensorUrl": "https://influx.bitcraftswe.it",
                 "databaseSensorUser": "admin",
                 "databaseSensorPassword": "B1tcraftswe",
                 "databaseSensorName": "telegraf",
