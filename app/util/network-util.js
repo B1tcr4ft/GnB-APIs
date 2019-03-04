@@ -80,7 +80,7 @@ function writeNetworkStates(network, updatedValues) {
 
     //compose queryParams
     let queryParams = `/write?u=${network.databaseWriteUser}&p=${network.databaseWritePassword}&db=${network.databaseWriteName}&precision=s`;
-    let measurementName = network.name.replace(' ', '_') + '[' + network.id + ']';
+    let measurementName = network.name.replace(/ /g, '_') + '[' + network.id + ']';
 
     //scan updatedValues and compose dataToSend
     let dataToSend = "";
