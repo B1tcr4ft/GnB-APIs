@@ -66,7 +66,7 @@ module.exports = app => {
 
     app.get('/api/stop/:id', (req, res) => {
         if (clockList[req.params.id]) {
-            let network = activeNetworkList[res.params.id];
+            let network = activeNetworkList[req.params.id];
             let clock = clockList[req.params.id];
 
             clearInterval(clock);
