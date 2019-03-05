@@ -66,10 +66,12 @@ module.exports = app => {
 
     app.get('/api/stop/:id', (req, res) => {
         if (clockList[req.params.id]) {
-            clearInterval(clockList[req.params.id]);
+            let network = activeNetworkList[res.params.id];
+            let clock = clockList[req.params.id];
 
-            clockList = clockList.filter(val => val !== req.params.id);
-            activeNetworkList = activeNetworkList.filter(val => val !== req.params.id);
+            clearInterval(clock);
+            clockList = clockList.filter(val => val !== clock);
+            activeNetworkList = activeNetworkList.filter(val => val !== network);
 
             res.send('The network has been stopped!');
         } else {
