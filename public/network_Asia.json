@@ -2,9 +2,9 @@
   "id": "Asia",
   "name": "Asia",
   "databaseWriteName": "mydb",
-  "databaseWriteUrl": "https://influx.bitcraftswe.it",
-  "databaseWriteUser": "admin",
-  "databaseWritePassword": "B1tcraftswe",
+  "databaseWriteUrl": "https://mydomain.it",
+  "databaseWriteUser": "",
+  "databaseWritePassword": "",
   "refreshTime": 1000,
   "nodes": [
     {
